@@ -1,24 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.0.3</Version>
-    <Authors>Sergio Pedri</Authors>
-    <Company>Sergio Pedri</Company>
-    <Description>A fast and memory efficient binary serialization library, powered by dynamic IL generation and inspired by MessagePack</Description>
-    <Copyright>Copyright (c) 2021 Sergio Pedri</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Sergio0694/BinaryPack</PackageProjectUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RepositoryUrl>https://github.com/Sergio0694/BinaryPack</RepositoryUrl>
-    <PackageTags>dotnet net netcore netstandard csharp library compression serialization json messagepack binary pack</PackageTags>
-    <PackageIconUrl>https://i.imgur.com/PyEEJrt.png</PackageIconUrl>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <PackageReleaseNotes>• Fixed string deserialization with non-ASCII characters</PackageReleaseNotes>
+	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
   </ItemGroup>
 
