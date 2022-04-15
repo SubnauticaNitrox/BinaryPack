@@ -57,7 +57,12 @@ namespace BinaryPack.Serialization.Processors.Arrays
                 /// <summary>
                 /// The <see langword="ref"/> <typeparamref name="TArray"/> variable, used to iterate arrays of reference types
                 /// </summary>
-                RefT
+                RefT,
+
+                /// <summary>
+                /// The single-dimensional array used to read unmanaged data and copy it to the multi-dimensional array
+                /// </summary>
+                FlatArray = 3
             }
         }
     }

@@ -131,5 +131,40 @@ namespace System
             Type nestedType = type.GetNestedType(name, BindingFlags.Public | BindingFlags.NonPublic);
             return nestedType.MakeGenericType(type.GenericTypeArguments);
         }
+
+        /// <summary>
+        /// Checks whether or not the input type is a single-dimensional array with a lower bound of 0.
+        /// </summary>
+        /// <param name="type">The input type to analyze</param>
+        public static bool IsSZArray(this Type type)
+        {
+            return type.IsArray && type.GetArrayRank() == 1 &&
+                ((Array)Activator.CreateInstance(type, new object[] { 0 }))
+                .GetLowerBound(0) == 0;
+        }
+
+        /// <summary>
+        /// Checks whether or not the input type is a multi-dimensional array with at least one dimension having a non-zero lower bound.
+        /// </summary>
+        /// <param name="type">The input type to analyze</param>
+        public static bool IsVariableBoundArray(this Type type)
+        {
+            if (!(type.IsArray && type.GetArrayRank() > 1))
+            {
+                return false;
+            }
+
+            Array array = (Array)Activator.CreateInstance(type, Enumerable.Repeat(0, type.GetArrayRank()).Cast<object>().ToArray());
+
+            for (int dimension = 0; dimension < array.Rank; dimension++)
+            {
+                if (array.GetLowerBound(dimension) != 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
