@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using BinaryPack.Serialization.Constants;
 using BinaryPack.Serialization.Processors.Abstract;
 using BinaryPack.Serialization.Reflection;
@@ -21,7 +22,7 @@ namespace BinaryPack.Serialization.Processors.Arrays
         {
             if (typeof(TArray).IsArray &&
                 typeof(TArray).GetArrayRank() > 1 &&
-                typeof(TArray).IsVariableBoundArray()) return;
+                !typeof(TArray).IsVariableBoundArray()) return;
 
             throw new ArgumentException($"{nameof(ArrayProcessor<TArray>)} only works on ND, 0-index arrays, not on [{typeof(TArray)}]");
         }
@@ -96,12 +97,12 @@ namespace BinaryPack.Serialization.Processors.Arrays
              * and serialize each of them with the right TypeProcessor<T> instance. */
             if (T.IsUnmanaged())
             {
-                // writer.Write(new Span<T>(obj, 0, length));
+                // writer.Write(new Span<T>(obj.Cast<T>().ToArray(), 0, length));
                 il.EmitLoadArgument(Arguments.Write.RefBinaryWriter);
                 il.EmitLoadArgument(Arguments.Write.T);
-                il.EmitLoadInt32(0);
-                il.EmitLoadLocal(Locals.Write.Length);
-                il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayWithOffsetAndLengthConstructor(T));
+                il.EmitCall(typeof(Enumerable).GetMethod(nameof(Enumerable.Cast)).MakeGenericMethod(T));
+                il.EmitCall(typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)).MakeGenericMethod(T));
+                il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayConstructor(T));
                 il.EmitCall(KnownMembers.BinaryWriter.WriteSpanT(T));
             }
             else
@@ -152,6 +153,7 @@ namespace BinaryPack.Serialization.Processors.Arrays
             il.DeclareLocal(typeof(TArray));
             il.DeclareLocals<Locals.Read>();
             if (!T.IsUnmanaged()) il.DeclareLocal(T.MakeByRefType());
+            else il.DeclareLocal(T.MakeArrayType());
 
             // int length = reader.Read<int>();
             il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
@@ -184,13 +186,33 @@ namespace BinaryPack.Serialization.Processors.Arrays
 
             if (T.IsUnmanaged())
             {
-                // reader.Read(new Span<T>(obj, 0, length));
-                il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
-                il.EmitLoadLocal(Locals.Read.ArrayT);
-                il.EmitLoadInt32(0);
+                // T[] flatArray = new T[length];
                 il.EmitLoadLocal(Locals.Read.Length);
-                il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayWithOffsetAndLengthConstructor(T));
+                il.Emit(OpCodes.Newarr, T);
+                il.EmitStoreLocal(Locals.Read.FlatArray);
+
+                // reader.Read(new Span<T>(flatArray));
+                il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
+                il.EmitLoadLocal(Locals.Read.FlatArray);
+                il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayConstructor(T));
                 il.EmitCall(KnownMembers.BinaryReader.ReadSpanT(T));
+
+                // Unsafe.CopyBlock(Unsafe.As<T, byte>(ref array[0, ..., 0]), Unsafe.As<T, byte>(ref flatArray[0]), 
+                // length * Unsafe.SizeOf<T>()); 
+                il.EmitLoadLocal(Locals.Read.ArrayT);
+                for (int i = 0; i < Rank; i++)
+                    il.EmitLoadInt32(0);
+                il.EmitCall(AddressMethod);
+
+                il.EmitLoadLocal(Locals.Read.FlatArray);
+                il.EmitLoadInt32(0);
+                il.Emit(OpCodes.Ldelema, T);
+
+                il.EmitLoadLocal(Locals.Read.Length);
+                il.Emit(OpCodes.Sizeof, T);
+                il.Emit(OpCodes.Mul);
+
+                il.Emit(OpCodes.Cpblk);
             }
             else
             {

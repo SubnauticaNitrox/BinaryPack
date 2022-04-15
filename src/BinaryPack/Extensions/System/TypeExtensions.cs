@@ -138,7 +138,9 @@ namespace System
         /// <param name="type">The input type to analyze</param>
         public static bool IsSZArray(this Type type)
         {
-            return type.IsArray && type.GetArrayRank() == 1 && ((Array)Activator.CreateInstance(type)).GetLowerBound(0) == 0;
+            return type.IsArray && type.GetArrayRank() == 1 &&
+                ((Array)Activator.CreateInstance(type, new object[] { 0 }))
+                .GetLowerBound(0) == 0;
         }
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace System
                 return false;
             }
 
-            Array array = (Array)Activator.CreateInstance(type);
+            Array array = (Array)Activator.CreateInstance(type, Enumerable.Repeat(0, type.GetArrayRank()).Cast<object>().ToArray());
 
             for (int dimension = 0; dimension < array.Rank; dimension++)
             {
