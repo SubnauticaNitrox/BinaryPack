@@ -74,10 +74,8 @@ namespace BinaryPack.Serialization.Buffers
 
             EnsureCapacity(totalSize);
 
-            ref T r0 = ref span.GetPinnableReference();
-            ref byte r1 = ref Unsafe.As<T, byte>(ref r0);
+            MemoryMarshal.Cast<T, byte>(span).CopyTo(_Buffer.AsSpan(_Position, totalSize));
 
-            MemoryMarshal.CreateSpan(ref r1, totalSize).CopyTo(_Buffer.AsSpan(_Position, totalSize));
             _Position += totalSize;
         }
 

@@ -21,7 +21,7 @@ namespace BinaryPack.Serialization.Processors.Arrays
         {
             if (typeof(TArray).IsArray &&
                 typeof(TArray).GetArrayRank() > 1 &&
-                typeof(TArray).IsVariableBoundArray) return;
+                typeof(TArray).IsVariableBoundArray()) return;
 
             throw new ArgumentException($"{nameof(ArrayProcessor<TArray>)} only works on ND, 0-index arrays, not on [{typeof(TArray)}]");
         }
@@ -96,14 +96,12 @@ namespace BinaryPack.Serialization.Processors.Arrays
              * and serialize each of them with the right TypeProcessor<T> instance. */
             if (T.IsUnmanaged())
             {
-                // writer.Write(MemoryMarshal.CreateSpan(ref obj[0, ..., 0], length));
+                // writer.Write(new Span<T>(obj, 0, length));
                 il.EmitLoadArgument(Arguments.Write.RefBinaryWriter);
                 il.EmitLoadArgument(Arguments.Write.T);
-                for (int i = 0; i < Rank; i++)
-                    il.EmitLoadInt32(0);
-                il.EmitCall(AddressMethod);
+                il.EmitLoadInt32(0);
                 il.EmitLoadLocal(Locals.Write.Length);
-                il.EmitCall(KnownMembers.Span.RefConstructor(T));
+                il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayWithOffsetAndLengthConstructor(T));
                 il.EmitCall(KnownMembers.BinaryWriter.WriteSpanT(T));
             }
             else
@@ -186,14 +184,12 @@ namespace BinaryPack.Serialization.Processors.Arrays
 
             if (T.IsUnmanaged())
             {
-                // reader.Read(MemoryMarshal.CreateSpan(ref obj[0, ..., 0], length));
+                // reader.Read(new Span<T>(obj, 0, length));
                 il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                 il.EmitLoadLocal(Locals.Read.ArrayT);
-                for (int i = 0; i < Rank; i++)
-                    il.EmitLoadInt32(0);
-                il.EmitCall(AddressMethod);
+                il.EmitLoadInt32(0);
                 il.EmitLoadLocal(Locals.Read.Length);
-                il.EmitCall(KnownMembers.Span.RefConstructor(T));
+                il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayWithOffsetAndLengthConstructor(T));
                 il.EmitCall(KnownMembers.BinaryReader.ReadSpanT(T));
             }
             else

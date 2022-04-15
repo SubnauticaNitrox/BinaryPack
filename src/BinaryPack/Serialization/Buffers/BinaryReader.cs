@@ -59,15 +59,8 @@ namespace BinaryPack.Serialization.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Read<T>(Span<T> span) where T : unmanaged
         {
-            /* This method is only invoked by the internal deserializers,
-             * which already perform bounds check before creating the target Span<T>.
-             * Since the input Span<T> is guaranteed to never be empty,
-             * we can use GetPinnableReference() instead of the this[int]
-             * indexer and skip one extra conditional jump in the JITted code. */
             int size = Unsafe.SizeOf<T>() * span.Length;
-            ref T r0 = ref span.GetPinnableReference();
-            ref byte r1 = ref Unsafe.As<T, byte>(ref r0);
-            Span<byte> destination = MemoryMarshal.CreateSpan(ref r1, size);
+            Span<byte> destination = MemoryMarshal.Cast<T, byte>(span);
             Span<byte> source = Buffer.Slice(_Position, size);
 
             source.CopyTo(destination);
