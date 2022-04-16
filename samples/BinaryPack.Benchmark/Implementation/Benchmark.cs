@@ -62,7 +62,7 @@ namespace BinaryPack.Benchmark.Implementations
                 serializer.Serialize(jsonWriter, Model);
                 jsonWriter.Flush();
 
-                NewtonsoftJsonData = stream.GetBuffer();
+                NewtonsoftJsonData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 using StreamReader textReader = new StreamReader(stream);
@@ -78,7 +78,7 @@ namespace BinaryPack.Benchmark.Implementations
                 var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
                 formatter.Serialize(stream, Model);
 
-                BinaryFormatterData = stream.GetBuffer();
+                BinaryFormatterData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 deserializedModel = (T)formatter.Deserialize(stream);
@@ -93,7 +93,7 @@ namespace BinaryPack.Benchmark.Implementations
 
                 System.Text.Json.JsonSerializer.Serialize(jsonWriter, Model);
 
-                DotNetCoreJsonData = stream.GetBuffer();
+                DotNetCoreJsonData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 deserializedModel = System.Text.Json.JsonSerializer.DeserializeAsync<T>(stream).Result;
@@ -107,7 +107,7 @@ namespace BinaryPack.Benchmark.Implementations
                 var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
                 serializer.WriteObject(stream, Model);
 
-                DataContractJsonData = stream.GetBuffer();
+                DataContractJsonData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 deserializedModel = (T)serializer.ReadObject(stream);
@@ -121,7 +121,7 @@ namespace BinaryPack.Benchmark.Implementations
                 var serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
                 serializer.Serialize(stream, Model);
 
-                XmlSerializerData = stream.GetBuffer();
+                XmlSerializerData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 deserializedModel = (T)serializer.Deserialize(stream);
@@ -134,7 +134,7 @@ namespace BinaryPack.Benchmark.Implementations
             {
                 Portable.Xaml.XamlServices.Save(stream, Model);
 
-                PortableXamlData = stream.GetBuffer();
+                PortableXamlData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 _ = Portable.Xaml.XamlServices.Load(stream);
@@ -146,7 +146,7 @@ namespace BinaryPack.Benchmark.Implementations
             {
                 Utf8JsonSerializer.Serialize(stream, Model);
 
-                Utf8JsonData = stream.GetBuffer();
+                Utf8JsonData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 deserializedModel = Utf8JsonSerializer.Deserialize<T>(stream);
@@ -157,12 +157,12 @@ namespace BinaryPack.Benchmark.Implementations
             // MessagePack
             using (MemoryStream stream = new MemoryStream())
             {
-                MessagePack.MessagePackSerializer.Serialize(stream, Model);
+                MessagePack.MessagePackSerializer.Serialize(stream, Model, MessagePack.Resolvers.ContractlessStandardResolver.Options);
 
-                MessagePackData = stream.GetBuffer();
+                MessagePackData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
-                deserializedModel = MessagePack.MessagePackSerializer.Deserialize<T>(stream);
+                deserializedModel = MessagePack.MessagePackSerializer.Deserialize<T>(stream, MessagePack.Resolvers.ContractlessStandardResolver.Options);
 
                 if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with MessagePack");
             }
@@ -172,7 +172,7 @@ namespace BinaryPack.Benchmark.Implementations
             {
                 BinaryConverter.Serialize(Model, stream);
 
-                BinaryPackData = stream.GetBuffer();
+                BinaryPackData = stream.ToArray();
 
                 stream.Seek(0, SeekOrigin.Begin);
                 deserializedModel = BinaryConverter.Deserialize<T>(stream);
