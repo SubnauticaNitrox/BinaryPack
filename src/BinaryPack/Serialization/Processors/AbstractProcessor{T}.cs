@@ -14,7 +14,7 @@ namespace BinaryPack.Serialization.Processors;
 internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
 {
     /// <summary>
-    /// Static <see cref="AbstractProcessor{T}"/> constructor to programmatically validate <typeparamref name="TBase"/>
+    /// Static <see cref="AbstractProcessor{TBase}"/> constructor to programmatically validate <typeparamref name="TBase"/>
     /// </summary>
     static AbstractProcessor()
     {
@@ -23,36 +23,34 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
         throw new ArgumentException($"{nameof(AbstractProcessor<TBase>)} only works on abstract classes or interfaces, not on [{typeof(TBase)}]");
     }
 
-    private static Type[] unionTypes = Type.EmptyTypes;
+    /// <summary>
+    /// Gets the singleton <see cref="AbstractProcessor{TBase}"/> instance to use
+    /// </summary>
+    public static AbstractProcessor<TBase>? Instance { get; private set; }
+
+    private static Type[] UnionTypes { get; set; } = Type.EmptyTypes;
 
     /// <summary>
-    /// The subclasses that may be assigned to a member of the <see langword="abstract"/> <see langword="class"/> or <see langword="interface"/>
+    /// Creates the singleton instance for <see cref="AbstractProcessor{TBase}"/> with the provided union types
     /// </summary>
-    public static Type[] UnionTypes
+    /// <param name="unionTypes">The subclasses that may be assigned to a member of the <see langword="abstract"/> <see langword="class"/> or <see langword="interface"/></param>
+    public static void Initialize(params Type[] unionTypes)
     {
-        set
+        if (Instance != null)
         {
-            if (unionTypes != Type.EmptyTypes && unionTypes != value)
-            {
-                throw new InvalidOperationException("Union types can only be defined once");
-            }
-
-            unionTypes = value;
+            throw new InvalidOperationException("Already initialized");
         }
-    }
 
-    // TODO: Defer call to constructor to avoid race condition
-    /// <summary>
-    /// Gets the singleton <see cref="AbstractProcessor{T}"/> instance to use
-    /// </summary>
-    public static AbstractProcessor<TBase> Instance { get; } = new AbstractProcessor<TBase>();
+        UnionTypes = unionTypes;
+        Instance = new AbstractProcessor<TBase>();
+    }
 
     /// <inheritdoc/>
     protected override void EmitSerializer(ILGenerator il)
     {
-        for (int i = 0; i < unionTypes.Length; i++)
+        for (int i = 0; i < UnionTypes.Length; i++)
         {
-            Type sub = unionTypes[i];
+            Type sub = UnionTypes[i];
             Label isNotInstance = il.DefineLabel();
 
             // if (obj is TSub) { }
@@ -98,9 +96,9 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
         il.EmitStoreLocal(Locals.Read.UnionIndex);
 
         // We cannot simply do unionTypes[index] because the value of index is not known until the method has been invoked
-        for (int i = 0; i < unionTypes.Length; i++)
+        for (int i = 0; i < UnionTypes.Length; i++)
         {
-            Type sub = unionTypes[i];
+            Type sub = UnionTypes[i];
             Label noMatch = il.DefineLabel();
 
             // if (index == i) { }

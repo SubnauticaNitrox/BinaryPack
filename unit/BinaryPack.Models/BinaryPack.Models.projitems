@@ -9,6 +9,7 @@
     <Import_RootNamespace>BinaryPack.Models</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractPacketModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HelloWorldModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\StructuralComparer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\RandomProvider.cs" />

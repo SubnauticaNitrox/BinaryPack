@@ -164,9 +164,9 @@ namespace BinaryPack
         /// </summary>
         /// <typeparam name="TBase">The abstract base class or interface</typeparam>
         /// <param name="subclasses">An array of subclasses that may be assigned to a member of type <typeparamref name="TBase"/></param>
-        public static void RegisterUnion<TBase>(Type[] subclasses)
+        public static void RegisterUnion<TBase>(params Type[] subclasses)
         {
-            AbstractProcessor<TBase>.UnionTypes = subclasses;
+            AbstractProcessor<TBase>.Initialize(subclasses);
         }
     }
 }
