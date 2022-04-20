@@ -49,11 +49,6 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
     /// <param name="unionTypes">The subclasses that may be assigned to a member of the <see langword="abstract"/> <see langword="class"/> or <see langword="interface"/></param>
     public static void DefineUnion(params Type[] unionTypes)
     {
-        if (Instance != null)
-        {
-            throw new InvalidOperationException("Already initialized");
-        }
-
         UnionTypes = unionTypes;
     }
 
