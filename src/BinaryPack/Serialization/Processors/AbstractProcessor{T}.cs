@@ -23,18 +23,31 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
         throw new ArgumentException($"{nameof(AbstractProcessor<TBase>)} only works on abstract classes or interfaces, not on [{typeof(TBase)}]");
     }
 
+    private static AbstractProcessor<TBase>? instance;
+
     /// <summary>
     /// Gets the singleton <see cref="AbstractProcessor{TBase}"/> instance to use
     /// </summary>
-    public static AbstractProcessor<TBase>? Instance { get; private set; }
+    public static AbstractProcessor<TBase> Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new AbstractProcessor<TBase>();
+            }
+
+            return instance;
+        }
+    }
 
     private static Type[] UnionTypes { get; set; } = Type.EmptyTypes;
 
     /// <summary>
-    /// Creates the singleton instance for <see cref="AbstractProcessor{TBase}"/> with the provided union types
+    /// Defines the union for <see cref="AbstractProcessor{TBase}"/> with the provided allowed subclasses
     /// </summary>
     /// <param name="unionTypes">The subclasses that may be assigned to a member of the <see langword="abstract"/> <see langword="class"/> or <see langword="interface"/></param>
-    public static void Initialize(params Type[] unionTypes)
+    public static void DefineUnion(params Type[] unionTypes)
     {
         if (Instance != null)
         {
@@ -42,7 +55,6 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
         }
 
         UnionTypes = unionTypes;
-        Instance = new AbstractProcessor<TBase>();
     }
 
     /// <inheritdoc/>
