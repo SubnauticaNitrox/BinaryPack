@@ -58,5 +58,8 @@ namespace BinaryPack.Unit
 
         [TestMethod]
         public void ValidationReferenceTypeModel() => TestRunner.Test<ValidationReferenceTypeModel>();
+
+        [TestMethod]
+        public void AbstractPacketSample() => TestRunner.Test<AbstractPacketModel>();
     }
 }

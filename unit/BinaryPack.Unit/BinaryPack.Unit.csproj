@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-	<LangVersion>latest</LangVersion>
 	<MSBuildWarningsAsMessages>NU1702;MSB3277</MSBuildWarningsAsMessages>
   </PropertyGroup>
 

@@ -157,5 +157,16 @@ namespace BinaryPack
                 writer.Dispose();
             }
         }
+
+        /// <summary>
+        /// Registers a union for <typeparamref name="TBase"/> that defines the allowed subclasses that may be serialized
+        /// for a member of type <typeparamref name="TBase"/>
+        /// </summary>
+        /// <typeparam name="TBase">The abstract base class or interface</typeparam>
+        /// <param name="subclasses">An array of subclasses that may be assigned to a member of type <typeparamref name="TBase"/></param>
+        public static void RegisterUnion<TBase>(params Type[] subclasses)
+        {
+            AbstractProcessor<TBase>.DefineUnion(subclasses);
+        }
     }
 }

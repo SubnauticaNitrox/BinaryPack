@@ -46,6 +46,7 @@ namespace BinaryPack.Serialization.Reflection
                     _ when objectType.IsGenericType(typeof(IDictionary<,>)) => typeof(IDictionaryProcessor<,>).MakeGenericType(objectType.GenericTypeArguments),
                     _ when objectType.IsGenericType(typeof(IReadOnlyDictionary<,>)) => typeof(IReadOnlyDictionaryProcessor<,>).MakeGenericType(objectType.GenericTypeArguments),
                     _ when objectType == typeof(BitArray) => typeof(BitArrayProcessor),
+                    _ when objectType.IsAbstract || objectType.IsInterface => typeof(AbstractProcessor<>).MakeGenericType(objectType),
                     _ => typeof(ObjectProcessor<>).MakeGenericType(objectType)
                 };
 
