@@ -15,7 +15,7 @@ namespace BinaryPack.Serialization.Processors
     /// A <see langword="class"/> responsible for creating the serializers and deserializers for generic models
     /// </summary>
     /// <typeparam name="T">The type of items to handle during serialization and deserialization</typeparam>
-    internal sealed partial class ObjectProcessor<T> : TypeProcessor<T> where T : new()
+    internal sealed partial class ObjectProcessor<T> : TypeProcessor<T>
     {
         /// <summary>
         /// The collection of <see cref="MemberInfo"/> instances representing all the serializable members for type <typeparamref name="T"/>
@@ -257,7 +257,7 @@ namespace BinaryPack.Serialization.Processors
                 il.MarkLabel(isNotNull);
 
                 // T obj = new T();
-                il.Emit(OpCodes.Newobj, typeof(T).GetConstructor(Type.EmptyTypes));
+                il.Emit(OpCodes.Newobj, typeof(T).GetVirtualConstructor(Type.EmptyTypes));
                 il.EmitStoreLocal(Locals.Read.T);
             }
             else

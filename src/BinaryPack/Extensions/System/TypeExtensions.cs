@@ -166,5 +166,30 @@ namespace System
 
             return false;
         }
+
+        /// <summary>
+        /// Finds the constructor for a type or na ancestor of the type that has the specified parameters
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="parameterTypes"></param>
+        /// <returns></returns>
+        public static ConstructorInfo? GetVirtualConstructor(this Type type, Type[] parameterTypes)
+        {
+            Type current = type;
+
+            do
+            {
+                ConstructorInfo constructor = current.GetConstructor(parameterTypes);
+
+                if (constructor != null)
+                {
+                    return constructor;
+                }
+
+                current = current.BaseType;
+            } while (current.BaseType != null);
+
+            return null;
+        }
     }
 }
