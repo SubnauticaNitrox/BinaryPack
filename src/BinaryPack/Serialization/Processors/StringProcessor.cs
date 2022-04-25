@@ -45,7 +45,7 @@ namespace BinaryPack.Serialization.Processors
             il.EmitReadMember(typeof(Encoding).GetProperty(nameof(Encoding.UTF8)));
             il.EmitLoadArgument(Arguments.Write.T);
             il.EmitCall(typeof(MemoryExtensions).GetMethod(nameof(MemoryExtensions.AsSpan), new[] { typeof(string) }));
-            il.EmitCallvirt(typeof(Encoding).GetMethod(nameof(Encoding.GetByteCount), new[] { typeof(ReadOnlySpan<char>) }));
+            il.EmitCallvirt(typeof(Encoding).GetMethod(nameof(Encoding.GetByteCount), new[] { typeof(char[]) }));
             il.EmitStoreLocal(Locals.Write.Length);
             il.MarkLabel(skipGetByteCount);
 
