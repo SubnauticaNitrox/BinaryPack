@@ -168,5 +168,16 @@ namespace BinaryPack
         {
             AbstractProcessor<TBase>.DefineUnion(subclasses);
         }
+
+        /// <summary>
+        /// Registers a union for the given base type that defines the allowed subclasses that may be serialized
+        /// for a member of the given base type
+        /// </summary>
+        /// <param name="baseType">The abstract base class or interface</param>
+        /// <param name="subclasses">An array of subclasses that may be assigned to a member of type <typeparamref name="TBase"/></param>
+        public static void RegisterUnion(Type baseType, params Type[] subclasses)
+        {
+            typeof(AbstractProcessor<>).MakeGenericType(baseType).GetMethod(nameof(AbstractProcessor<object>.DefineUnion)).Invoke(null, subclasses);
+        }
     }
 }
