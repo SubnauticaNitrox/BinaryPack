@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Reflection.Emit;
 using System.Text;
 using BinaryPack.Serialization.Constants;
@@ -37,15 +36,14 @@ namespace BinaryPack.Serialization.Processors
             il.MarkLabel(lengthLoaded);
             il.EmitStoreLocal(Locals.Write.Length);
 
-            // if (length > 0) length = Encoding.UTF8.GetByteCount(obj.AsSpan());
+            // if (length > 0) length = Encoding.UTF8.GetByteCount(obj);
             Label skipGetByteCount = il.DefineLabel();
             il.EmitLoadLocal(Locals.Write.Length);
             il.EmitLoadInt32(0);
             il.Emit(OpCodes.Ble_S, skipGetByteCount);
             il.EmitReadMember(typeof(Encoding).GetProperty(nameof(Encoding.UTF8)));
             il.EmitLoadArgument(Arguments.Write.T);
-            il.EmitCall(typeof(MemoryExtensions).GetMethod(nameof(MemoryExtensions.AsSpan), new[] { typeof(string) }));
-            il.EmitCallvirt(typeof(Encoding).GetMethod(nameof(Encoding.GetByteCount), new[] { typeof(char[]) }));
+            il.EmitCallvirt(typeof(Encoding).GetMethod(nameof(Encoding.GetByteCount), new[] { typeof(string) }));
             il.EmitStoreLocal(Locals.Write.Length);
             il.MarkLabel(skipGetByteCount);
 
@@ -69,7 +67,7 @@ namespace BinaryPack.Serialization.Processors
             // _ = Encoding.UTF8.GetBytes(obj, 0, obj.Length, array, 0);
             il.EmitReadMember(typeof(Encoding).GetProperty(nameof(Encoding.UTF8)));
             il.EmitLoadArgument(Arguments.Write.T);
-            il.EmitLoadInt32(0);            
+            il.EmitLoadInt32(0);
             il.EmitLoadArgument(Arguments.Write.T);
             il.EmitReadMember(typeof(string).GetProperty(nameof(string.Length)));
             il.EmitLoadLocal(Locals.Write.ByteArray);
