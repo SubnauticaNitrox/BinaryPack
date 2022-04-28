@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Reflection;
 using BinaryPack.Serialization.Processors;
 using BinaryReader = BinaryPack.Serialization.Buffers.BinaryReader;
 using BinaryWriter = BinaryPack.Serialization.Buffers.BinaryWriter;
@@ -167,6 +168,17 @@ namespace BinaryPack
         public static void RegisterUnion<TBase>(params Type[] subclasses)
         {
             AbstractProcessor<TBase>.DefineUnion(subclasses);
+        }
+
+        /// <summary>
+        /// Registers a union for the given base type that defines the allowed subclasses that may be serialized
+        /// for a member of the given base type
+        /// </summary>
+        /// <param name="baseType">The abstract base class or interface</param>
+        /// <param name="subclasses">An array of subclasses that may be assigned to a member of type <typeparamref name="TBase"/></param>
+        public static void RegisterUnion(Type baseType, Type[] subclasses)
+        {
+            typeof(AbstractProcessor<>).MakeGenericType(baseType).GetMethod(nameof(AbstractProcessor<object>.DefineUnion)).Invoke(null, new object[] { subclasses });
         }
     }
 }
