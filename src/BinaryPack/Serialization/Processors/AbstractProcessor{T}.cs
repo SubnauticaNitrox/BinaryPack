@@ -18,7 +18,8 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
     /// </summary>
     static AbstractProcessor()
     {
-        if (typeof(TBase).IsAbstract || typeof(TBase).IsInterface) return;
+        if (typeof(TBase).IsAbstract || typeof(TBase).IsInterface)
+            return;
 
         throw new ArgumentException($"{nameof(AbstractProcessor<TBase>)} only works on abstract classes or interfaces, not on [{typeof(TBase)}]");
     }
@@ -123,11 +124,10 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
 
             il.MarkLabel(noMatch);
         }
-
         // throw new IndexOutOfRangeException($"Index {index} is outside the bounds of the union types array for {typeof(TBase)}");
         il.Emit(OpCodes.Ldstr, $"Index {{0}} is outside the bounds of the union types array for {typeof(TBase)}");
         il.EmitLoadLocal(Locals.Read.UnionIndex);
-        il.EmitCall(typeof(string).GetMethod(nameof(string.Format), Enumerable.Repeat(typeof(string), 2).ToArray()));
+        il.EmitCall(typeof(string).GetMethod(nameof(string.Format), new Type[] { typeof(string), typeof(object) }));
         il.Emit(OpCodes.Newobj, typeof(IndexOutOfRangeException).GetConstructor(new Type[] { typeof(string) }));
         il.Emit(OpCodes.Throw);
     }
