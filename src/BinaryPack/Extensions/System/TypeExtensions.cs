@@ -21,7 +21,7 @@ namespace System
         public static IReadOnlyCollection<MemberInfo> GetSerializableMembers(this Type type)
         {
             BinarySerializationAttribute attribute = type.GetCustomAttribute<BinarySerializationAttribute>();
-            SerializationMode mode = attribute?.Mode ?? SerializationMode.Properties;
+            SerializationMode mode = attribute?.Mode ?? SerializationMode.AllMembers;
             IReadOnlyCollection<MemberInfo> members = (mode switch
             {
                 /* If the mode is set to explicit, we query all the members of the
