@@ -56,6 +56,21 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
     /// <inheritdoc/>
     protected override void EmitSerializer(ILGenerator il)
     {
+        // if (obj == null) { }
+        Label isNotNull = il.DefineLabel();
+        il.EmitLoadArgument(Arguments.Write.T);
+        il.Emit(OpCodes.Brtrue_S, isNotNull);
+
+        // writer.Write<int>(-1);
+        il.EmitLoadArgument(Arguments.Write.RefBinaryWriter);
+        il.EmitLoadInt32(-1);
+        il.EmitCall(KnownMembers.BinaryWriter.WriteT(typeof(int)));
+
+        // return;
+        il.Emit(OpCodes.Ret);
+
+        il.MarkLabel(isNotNull);
+
         for (int i = 0; i < UnionTypes.Length; i++)
         {
             Type sub = UnionTypes[i];
@@ -103,6 +118,16 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
         il.EmitCall(KnownMembers.BinaryReader.ReadT(typeof(int)));
         il.EmitStoreLocal(Locals.Read.UnionIndex);
 
+        // if (index == -1) return null;
+        Label isNotNull = il.DefineLabel();
+        il.EmitLoadLocal(Locals.Read.UnionIndex);
+        il.EmitLoadInt32(-1);
+        il.Emit(OpCodes.Ceq);
+        il.Emit(OpCodes.Brfalse_S, isNotNull);
+        il.Emit(OpCodes.Ldnull);
+        il.Emit(OpCodes.Ret);
+        il.MarkLabel(isNotNull);
+
         // We cannot simply do unionTypes[index] because the value of index is not known until the method has been invoked
         for (int i = 0; i < UnionTypes.Length; i++)
         {
@@ -124,10 +149,9 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
 
             il.MarkLabel(noMatch);
         }
-        // throw new IndexOutOfRangeException($"Index {index} is outside the bounds of the union types array for {typeof(TBase)}");
-        il.Emit(OpCodes.Ldstr, $"Index {{0}} is outside the bounds of the union types array for {typeof(TBase)}");
-        il.EmitLoadLocal(Locals.Read.UnionIndex);
-        il.EmitCall(typeof(string).GetMethod(nameof(string.Format), new Type[] { typeof(string), typeof(object) }));
+
+        // throw new IndexOutOfRangeException($"Index is outside the bounds of the union types array for {typeof(TBase)}");
+        il.Emit(OpCodes.Ldstr, $"Index is outside the bounds of the union types array for {typeof(TBase)}");
         il.Emit(OpCodes.Newobj, typeof(IndexOutOfRangeException).GetConstructor(new Type[] { typeof(string) }));
         il.Emit(OpCodes.Throw);
     }
