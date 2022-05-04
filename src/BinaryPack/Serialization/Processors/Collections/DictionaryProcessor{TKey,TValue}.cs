@@ -58,9 +58,10 @@ namespace BinaryPack.Serialization.Processors.Collections
             il.EmitLoadInt32(0);
             il.Emit(OpCodes.Ble_S, end);
 
-            // ref Entry r0 = ref obj._entries[0];
+            // ref Entry r0 = ref obj.entries[0];
             il.EmitLoadArgument(Arguments.Write.T);
-            il.EmitReadMember(typeof(Dictionary<TKey, TValue>).GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance));
+            il.EmitReadMember(typeof(Dictionary<TKey, TValue>).GetField("entries", BindingFlags.NonPublic | BindingFlags.Instance)
+                ?? typeof(Dictionary<TKey, TValue>).GetField("_entries", BindingFlags.NonPublic | BindingFlags.Instance)); // For unit tests
             il.EmitLoadInt32(0);
             il.Emit(OpCodes.Ldelema, EntryType);
             il.EmitStoreLocal(Locals.Write.RefEntry);
