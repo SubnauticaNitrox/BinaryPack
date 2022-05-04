@@ -53,11 +53,11 @@ namespace BinaryPack.Serialization.Reflection
                 // Access the static TypeProcessor<T> instance to get the requested dynamic method
                 PropertyInfo instanceInfo = processorType.GetProperty(nameof(StringProcessor.Instance)); // Guaranteed to be there for all processors
                 object processorInstance = instanceInfo.GetValue(null);
-                FieldInfo fieldInfo = processorType.GetField(name);
-                object genericMethod = fieldInfo.GetValue(processorInstance);
-                PropertyInfo propertyInfo = genericMethod.GetType().GetProperty(nameof(DynamicMethod<Action>.MethodInfo));
+                PropertyInfo dynamicMethodInfo = processorType.GetProperty(name);
+                object genericMethod = dynamicMethodInfo.GetValue(processorInstance);
+                PropertyInfo methodInfoInfo = genericMethod.GetType().GetProperty(nameof(DynamicMethod<Action>.MethodInfo));
 
-                return (MethodInfo)propertyInfo.GetValue(genericMethod);
+                return (MethodInfo)methodInfoInfo.GetValue(genericMethod);
             }
 
             /// <summary>
