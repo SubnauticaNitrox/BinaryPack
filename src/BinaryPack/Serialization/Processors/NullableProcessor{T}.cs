@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using BinaryPack.Serialization.Constants;
@@ -15,7 +16,9 @@ namespace BinaryPack.Serialization.Processors
         /// <summary>
         /// The <see cref="FieldInfo"/> instance mapping the private <see cref="Nullable{T}"/> field indicating whether or not the value is not <see langword="null"/>
         /// </summary>
-        private static readonly FieldInfo HasValueField = typeof(T?).GetField("hasValue", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly FieldInfo HasValueField =
+            typeof(T?).GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .First(f => f.Name.StartsWith("has", StringComparison.InvariantCultureIgnoreCase));
 
         /// <summary>
         /// The <see cref="FieldInfo"/> instance mapping the private <see cref="Nullable{T}"/> field with the actual <typeparamref name="T"/> value
