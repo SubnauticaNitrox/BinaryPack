@@ -65,7 +65,7 @@ namespace System.Reflection.Emit
         public static DynamicMethod<T> New()
         {
             // Create a new dynamic method
-            DynamicMethod method = new DynamicMethod(GetNewId(), ReturnType, ParameterTypes, OwnerType);
+            DynamicMethod method = new(GetNewId(), ReturnType, ParameterTypes, OwnerType, true);
 
             return new DynamicMethod<T>(method);
         }
