@@ -18,9 +18,9 @@ namespace BinaryPack.Serialization.Processors.Abstract
         {
             get
             {
-                if (serializer == null)
+                if (!startedEmitting)
                 {
-                    BuildMethods();
+                    EmitMethods();
                 }
 
                 return serializerInfo;
@@ -36,9 +36,9 @@ namespace BinaryPack.Serialization.Processors.Abstract
         {
             get
             {
-                if (deserializer == null)
+                if (!startedEmitting)
                 {
-                    BuildMethods();
+                    EmitMethods();
                 }
 
                 return deserializerInfo;
@@ -81,21 +81,27 @@ namespace BinaryPack.Serialization.Processors.Abstract
             }
         }
 
-        private bool building;
+        private bool startedEmitting;
+
+        private void EmitMethods()
+        {
+            if (startedEmitting) return;
+
+            startedEmitting = true;
+
+            SerializerInfo.Emit(EmitSerializer);
+            DeserializerInfo.Emit(EmitDeserializer);
+        }
 
         private void BuildMethods()
         {
-            if (building)
+            if (!startedEmitting)
             {
-                return;
+                EmitMethods();
             }
 
-            building = true;
-
-            serializer = SerializerInfo.Build(EmitSerializer);
-            deserializer = DeserializerInfo.Build(EmitDeserializer);
-
-            building = false;
+            serializer = SerializerInfo.Build();
+            deserializer = DeserializerInfo.Build();
         }
 
         /// <summary>

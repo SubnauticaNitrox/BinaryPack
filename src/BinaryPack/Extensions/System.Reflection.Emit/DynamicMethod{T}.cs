@@ -71,20 +71,48 @@ namespace System.Reflection.Emit
         }
 
         /// <summary>
-        /// Creates a new <typeparamref name="T"/> <see langword="delegate"/> for the current <see cref="MethodInfo"/> handle
+        /// State tracked to ensure correct order of actions when building
+        /// </summary>
+        private State state;
+
+        /// <summary>
+        /// Emits the IL bytecode to the method
         /// </summary>
         /// <param name="builder">An <see cref="Action"/> that builds the IL bytecode for the new method</param>
-        /// <returns>A new dynamic method wrapped as a <typeparamref name="T"/> <see langword="delegate"/></returns>
         [Pure]
-        public T Build(Action<ILGenerator> builder)
+        public void Emit(Action<ILGenerator> builder)
         {
-            // Create and build the new method
+            if (state >= State.Emitted) throw new InvalidOperationException("Emit may only be called once");
+
             DynamicMethod method = (DynamicMethod)MethodInfo;
             ILGenerator il = method.GetILGenerator();
             builder(il);
 
-            // Build and delegate instance
-            return (T)method.CreateDelegate(typeof(T));
+            state = State.Emitted;
+        }
+
+        /// <summary>
+        /// Creates a new <typeparamref name="T"/> <see langword="delegate"/> for the current <see cref="MethodInfo"/> handle
+        /// </summary>
+        /// <returns>A new dynamic method wrapped as a <typeparamref name="T"/> <see langword="delegate"/></returns>
+        [Pure]
+        public T Build()
+        {
+            if (state < State.Emitted) throw new InvalidOperationException("Emit has not been called");
+
+            state = State.Built;
+
+            return (T)MethodInfo.CreateDelegate(typeof(T));
+        }
+
+        /// <summary>
+        /// The methods that have been called on this object
+        /// </summary>
+        private enum State
+        {
+            Initialized,
+            Emitted,
+            Built
         }
     }
 }
