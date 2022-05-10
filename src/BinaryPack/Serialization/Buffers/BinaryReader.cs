@@ -13,7 +13,7 @@ namespace BinaryPack.Serialization.Buffers
         /// <summary>
         /// The <see cref="Span{T}"/> current in use
         /// </summary>
-        private readonly Span<byte> Buffer;
+        private readonly ReadOnlySpan<byte> Buffer;
 
         /// <summary>
         /// The current position into <see cref="Buffer"/>
@@ -24,7 +24,7 @@ namespace BinaryPack.Serialization.Buffers
         /// Creates a new <see cref="BinaryReader"/> instance with the given parameters
         /// </summary>
         /// <param name="buffer">The source<see cref="Span{T}"/> to read data from</param>
-        public BinaryReader(Span<byte> buffer)
+        public BinaryReader(ReadOnlySpan<byte> buffer)
         {
             Buffer = buffer;
             _Position = 0;
@@ -44,7 +44,7 @@ namespace BinaryPack.Serialization.Buffers
              * by the caller, or data that is just a slice on another array.
              * These variable declarations are just for clarity, they are
              * all optimized away bit the JIT compiler anyway. */
-            ref byte r0 = ref Buffer[_Position];
+            ref byte r0 = ref Unsafe.AsRef(Buffer[_Position]);
             T value = Unsafe.As<byte, T>(ref r0);
             _Position += Unsafe.SizeOf<T>();
 
@@ -61,7 +61,7 @@ namespace BinaryPack.Serialization.Buffers
         {
             int size = Unsafe.SizeOf<T>() * span.Length;
             Span<byte> destination = MemoryMarshal.Cast<T, byte>(span);
-            Span<byte> source = Buffer.Slice(_Position, size);
+            ReadOnlySpan<byte> source = Buffer.Slice(_Position, size);
 
             source.CopyTo(destination);
             _Position += size;

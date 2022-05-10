@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Reflection;
 using BinaryPack.Serialization.Processors;
 using BinaryReader = BinaryPack.Serialization.Buffers.BinaryReader;
 using BinaryWriter = BinaryPack.Serialization.Buffers.BinaryWriter;
@@ -28,7 +27,7 @@ namespace BinaryPack
             {
                 ObjectProcessor<T>.Instance.Serializer(obj, ref writer);
 
-                return writer.Span.ToArray();
+                return writer.Buffer;
             }
             finally
             {
@@ -49,7 +48,8 @@ namespace BinaryPack
             try
             {
                 ObjectProcessor<T>.Instance.Serializer(obj, ref writer);
-                stream.Write(writer.Span.ToArray(), 0, writer.Span.Length);
+
+                stream.Write(writer.Buffer, 0, writer.Buffer.Length);
             }
             finally
             {
@@ -65,9 +65,7 @@ namespace BinaryPack
         [Pure]
         public static T Deserialize<T>(Span<byte> span) where T : new()
         {
-            BinaryReader reader = new BinaryReader(span);
-
-            return ObjectProcessor<T>.Instance.Deserializer(ref reader);
+            return Deserialize<T>((ReadOnlySpan<byte>)span);
         }
 
         /// <summary>
@@ -78,7 +76,9 @@ namespace BinaryPack
         [Pure]
         public static T Deserialize<T>(ReadOnlySpan<byte> span) where T : new()
         {
-            return Deserialize<T>(new Span<byte>(span.ToArray()));
+            BinaryReader reader = new BinaryReader(span);
+
+            return ObjectProcessor<T>.Instance.Deserializer(ref reader);
         }
 
         /// <summary>
