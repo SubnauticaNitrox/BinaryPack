@@ -35,7 +35,8 @@ namespace System
                        member.MemberType == MemberTypes.Field) &&
                       member.IsDefined(typeof(SerializableMemberAttribute)) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
-                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite)
+                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
+                       && propertyInfo.GetIndexParameters().Length == 0)
                 orderby member.Name
                 select member,
 
@@ -53,7 +54,8 @@ namespace System
                        mode.HasFlag(SerializationMode.Fields) && member.MemberType == MemberTypes.Field) &&
                       !member.IsDefined(typeof(IgnoredMemberAttribute)) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
-                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite)
+                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
+                       && propertyInfo.GetIndexParameters().Length == 0)
                 orderby member.Name
                 select member
             }).ToArray();
