@@ -15,7 +15,11 @@
                 /// <summary>
                 /// The input instance
                 /// </summary>
-                T
+                T,
+                /// <summary>
+                /// The first parameter index
+                /// </summary>
+                P
             }
         }
     }

@@ -19,7 +19,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to serialize</typeparam>
         /// <param name="obj">The input instance to serialize</param>
         /// <returns>A <see cref="Memory{T}"/> instance containing the serialized data</returns>
-        public static byte[] Serialize<T>(T obj) where T : new()
+        public static byte[] Serialize<T>(T obj)
         {
             BinaryWriter writer = new BinaryWriter(BinaryWriter.DefaultSize);
 
@@ -41,7 +41,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to serialize</typeparam>
         /// <param name="obj">The input instance to serialize</param>
         /// <param name="stream">The <see cref="Stream"/> instance to use to write the data</param>
-        public static void Serialize<T>(T obj, Stream stream) where T : new()
+        public static void Serialize<T>(T obj, Stream stream)
         {
             BinaryWriter writer = new BinaryWriter(BinaryWriter.DefaultSize);
 
@@ -63,7 +63,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to deserialize</typeparam>
         /// <param name="span">The input <see cref="Span{T}"/> instance to read data from</param>
         [Pure]
-        public static T Deserialize<T>(Span<byte> span) where T : new()
+        public static T Deserialize<T>(Span<byte> span)
         {
             return Deserialize<T>((ReadOnlySpan<byte>)span);
         }
@@ -74,7 +74,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to deserialize</typeparam>
         /// <param name="span">The input <see cref="ReadOnlySpan{T}"/> instance to read data from</param>
         [Pure]
-        public static T Deserialize<T>(ReadOnlySpan<byte> span) where T : new()
+        public static T Deserialize<T>(ReadOnlySpan<byte> span)
         {
             BinaryReader reader = new BinaryReader(span);
 
@@ -87,7 +87,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to deserialize</typeparam>
         /// <param name="memory">The input <see cref="Memory{T}"/> instance to read data from</param>
         [Pure]
-        public static T Deserialize<T>(Memory<byte> memory) where T : new()
+        public static T Deserialize<T>(Memory<byte> memory)
         {
             return Deserialize<T>(memory.Span);
         }
@@ -98,7 +98,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to deserialize</typeparam>
         /// <param name="memory">The input <see cref="ReadOnlyMemory{T}"/> instance to read data from</param>
         [Pure]
-        public static T Deserialize<T>(ReadOnlyMemory<byte> memory) where T : new()
+        public static T Deserialize<T>(ReadOnlyMemory<byte> memory)
         {
             return Deserialize<T>(memory.Span);
         }
@@ -109,7 +109,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to deserialize</typeparam>
         /// <param name="array">The input <see cref="byte"/> array instance to read data from</param>
         [Pure]
-        public static T Deserialize<T>(byte[] array) where T : new()
+        public static T Deserialize<T>(byte[] array)
         {
             return Deserialize<T>(array.AsSpan());
         }
@@ -120,7 +120,7 @@ namespace BinaryPack
         /// <typeparam name="T">The type of instance to deserialize</typeparam>
         /// <param name="stream">The input <see cref="Stream"/> instance to read data from</param>
         [Pure]
-        public static T Deserialize<T>(Stream stream) where T : new()
+        public static T Deserialize<T>(Stream stream)
         {
             if (stream.CanSeek)
             {

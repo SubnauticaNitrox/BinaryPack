@@ -38,6 +38,14 @@ namespace System.Reflection.Emit
                 il.DeclareLocal(type);
             }
         }
+        
+        public static void DeclareLocals(this ILGenerator il, Type[] types)
+        {
+            foreach (Type type in types)
+            {
+                il.DeclareLocal(type);
+            }
+        }
 
         /// <summary>
         /// Emits the necessary instructions to execute a <see langword="call"/> operation onto the stream of instructions
