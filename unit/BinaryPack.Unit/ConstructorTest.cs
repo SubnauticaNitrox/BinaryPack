@@ -17,14 +17,6 @@ namespace BinaryPack.Unit
         
         [TestMethod]
         public void NoConstructorTest() => TestRunner.TestThrow<NoConstructor, NullReferenceException>( new NoConstructor("ThrowTest"));
-
-        public Tuple<string, string> TestMethod()
-        {
-            string s1 = "T";
-            string s2 = "testest";
-            s2 += "T";
-            return new Tuple<string, string>(s1, s2);
-        }
     }
 
     public class EmptyConstructor : IEquatable<EmptyConstructor>

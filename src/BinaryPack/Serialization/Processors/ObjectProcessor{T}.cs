@@ -269,7 +269,6 @@ namespace BinaryPack.Serialization.Processors
                 }
                 else
                 {
-                    List<MemberInfo> memberList = Members.ToList();
                     Type[] parameterTypes = Members.Select(x => x.GetMemberType()).ToArray();
                     ConstructorInfo? constructor = typeof(T).GetConstructor(parameterTypes);
 
@@ -281,9 +280,10 @@ namespace BinaryPack.Serialization.Processors
                     il.DeclareLocals(parameterTypes);
                     StoreDeserializeMembers(il);
 
+                    List<string> memberNameList = Members.Select(x => x.Name.ToLower()).ToList();
                     foreach (ParameterInfo parameter in constructor.GetParameters())
                     {
-                        int memberInfoIndex = memberList.FindIndex(x => string.Equals(x.Name, parameter.Name, StringComparison.OrdinalIgnoreCase));
+                        int memberInfoIndex = memberNameList.IndexOf(parameter.Name.ToLower());
                     
                         if (memberInfoIndex == -1)
                         {
