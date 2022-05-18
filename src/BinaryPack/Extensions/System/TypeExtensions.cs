@@ -53,6 +53,8 @@ namespace System
                 where (mode.HasFlag(SerializationMode.Properties) && member.MemberType == MemberTypes.Property ||
                        mode.HasFlag(SerializationMode.Fields) && member.MemberType == MemberTypes.Field) &&
                       !member.IsDefined(typeof(IgnoredMemberAttribute)) &&
+                      (mode.HasFlag(SerializationMode.NonPublicMembers) || member.IsPublic() ||
+                       member.IsDefined(typeof(SerializableMemberAttribute))) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
                        member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
                        && propertyInfo.GetIndexParameters().Length == 0)
