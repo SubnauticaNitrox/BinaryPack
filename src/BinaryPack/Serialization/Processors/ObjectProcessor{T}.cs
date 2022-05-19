@@ -276,21 +276,16 @@ namespace BinaryPack.Serialization.Processors
                     {
                         throw new NullReferenceException("The given object has neither an parameterless constructor nor a constructor with parameters named like all serialized fields/properties.");
                     }
-                    
-                    il.DeclareLocals(parameterTypes);
-                    StoreDeserializeMembers(il);
 
-                    List<string> memberNameList = Members.Select(x => x.Name.ToLower()).ToList();
+                    Dictionary<string, MemberInfo> memberNameToMember = Members.ToDictionary(x => x.Name.ToLower());
                     foreach (ParameterInfo parameter in constructor.GetParameters())
                     {
-                        int memberInfoIndex = memberNameList.IndexOf(parameter.Name.ToLower());
-                    
-                        if (memberInfoIndex == -1)
+                        if (!memberNameToMember.TryGetValue(parameter.Name.ToLower(), out MemberInfo memberInfo))
                         {
-                            throw new NullReferenceException($"The given object's constructor parameter \"{parameter.Name}\" has no variable with the same name (case ignored).");
+                            throw new NullReferenceException($"The given object's constructor parameter \"{parameter.Name}\" has no serialized variable with the same name (case ignored).");
                         }
-                        
-                        il.EmitLoadLocal(Locals.Read.P + memberInfoIndex);
+
+                        DeserializeMemberOntoStack(il, memberInfo);
                     }
 
                     il.Emit(OpCodes.Newobj, constructor);
@@ -434,13 +429,8 @@ namespace BinaryPack.Serialization.Processors
             }
         }
         
-         private void StoreDeserializeMembers(ILGenerator il) 
+        private void DeserializeMemberOntoStack(ILGenerator il, MemberInfo memberInfo) 
         {
-            // Deserialize all the contained properties
-            for (int index = 0; index < Members.Count; index++)
-            {
-                MemberInfo memberInfo = Members.ElementAt(index);
-
                 /* Just like with the serialization pass, handle each case separately.
                 * If the property is of an unmanaged type, just read the bytes from the
                 * stream and assign the target property by reinterpreting them to the right type. */
@@ -449,7 +439,6 @@ namespace BinaryPack.Serialization.Processors
                     // store: reader.Read<TProperty>();
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.BinaryReader.ReadT(memberInfo.GetMemberType()));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                 }
                 else if (memberInfo.GetMemberType().IsGenericType(typeof(IList<>)) ||
                          memberInfo.GetMemberType().IsGenericType(typeof(IReadOnlyList<>)) ||
@@ -479,35 +468,30 @@ namespace BinaryPack.Serialization.Processors
                     il.MarkLabel(list);
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(typeof(List<>).MakeGenericType(itemType)));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                     il.Emit(OpCodes.Br_S, end);
 
                     // case ArrayProcessor<T>.Id: obj.Property = ArrayProcessor<T>.Deserializer(ref reader);
                     il.MarkLabel(array);
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(itemType.MakeArrayType()));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                     il.Emit(OpCodes.Br_S, end);
 
                     // case ICollectionProcessor<T>.Id: obj.Property = ICollectionProcessor<T>.Deserializer(ref reader);
                     il.MarkLabel(iCollection);
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(typeof(ICollection<>).MakeGenericType(itemType)));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                     il.Emit(OpCodes.Br_S, end);
 
                     // case IReadOnlyCollectionProcessor<T>.Id: obj.Property = IReadOnlyCollectionProcessor<T>.Deserializer(ref reader);
                     il.MarkLabel(iReadOnlyCollection);
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(typeof(IReadOnlyCollection<>).MakeGenericType(itemType)));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                     il.Emit(OpCodes.Br_S, end);
 
                     // default: obj.Property = IEnumerableProcessor<T>.Deserializer(ref reader);
                     il.MarkLabel(iEnumerable);
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(typeof(IEnumerable<>).MakeGenericType(itemType)));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                     il.MarkLabel(end);
                 }
                 else if (memberInfo.GetMemberType().IsGenericType(typeof(IDictionary<,>)) ||
@@ -535,16 +519,13 @@ namespace BinaryPack.Serialization.Processors
 
                     // obj.Property = dictionary;
                     il.MarkLabel(end);
-                    il.EmitStoreLocal(Locals.Read.P + index);
                 }
                 else
                 {
                     // Fallback to the right TypeProcessor<T> for all other types
                     il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
                     il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(memberInfo.GetMemberType()));
-                    il.EmitStoreLocal(Locals.Read.P + index);
                 }
-            }
         }
 }
 } 
