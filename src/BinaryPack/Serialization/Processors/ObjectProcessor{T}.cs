@@ -259,49 +259,71 @@ namespace BinaryPack.Serialization.Processors
 
                 ConstructorInfo? parameterlessConstructor = typeof(T).GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 
-                if (parameterlessConstructor != null)
+                if (parameterlessConstructor == null)
                 {
-                    // T obj = new T();
-                    il.Emit(OpCodes.Newobj, parameterlessConstructor);
-                    il.EmitStoreLocal(Locals.Read.T);
+                    ConstructorInfo? parameterConstructor = null;
+                    List<MemberInfo> orderedMembers = new(Members.Count);
 
-                    WriteDeserializeMembers(il);
-                }
-                else
-                {
-                    Type[] parameterTypes = Members.Select(x => x.GetMemberType()).ToArray();
-                    ConstructorInfo? constructor = typeof(T).GetConstructor(parameterTypes);
+                    // Finding a constructor where all serialized members have a parameter with same type and same name (ignoring case)
+                    foreach (ConstructorInfo constructor in typeof(T).GetConstructors())
+                    {
+                        if (constructor.GetParameters().Length != Members.Count)
+                        {
+                            continue;
+                        }
 
-                    if (constructor == null)
+                        orderedMembers.Clear();
+                        bool foundAllParameters = true;
+
+                        foreach (ParameterInfo parameter in constructor.GetParameters())
+                        {
+                            MemberInfo? memberInfoForParameter = Members.FirstOrDefault(x => x.GetMemberType() == parameter.ParameterType &&
+                                                                                             string.Equals(x.Name, parameter.Name, StringComparison.OrdinalIgnoreCase));
+
+                            if (memberInfoForParameter == null)
+                            {
+                                foundAllParameters = false;
+                                break;
+                            }
+
+                            orderedMembers.Add(memberInfoForParameter);
+                        }
+
+                        if (foundAllParameters)
+                        {
+                            parameterConstructor = constructor;
+                            break;
+                        }
+                    }
+
+                    if (parameterConstructor == null)
                     {
                         throw new NullReferenceException("The given object has neither an parameterless constructor nor a constructor with parameters named like all serialized fields/properties.");
                     }
 
-                    Dictionary<string, MemberInfo> memberNameToMember = Members.ToDictionary(x => x.Name.ToLower());
-                    foreach (ParameterInfo parameter in constructor.GetParameters())
+                    foreach (MemberInfo memberInfo in orderedMembers)
                     {
-                        if (!memberNameToMember.TryGetValue(parameter.Name.ToLower(), out MemberInfo memberInfo))
-                        {
-                            throw new NullReferenceException($"The given object's constructor parameter \"{parameter.Name}\" has no serialized variable with the same name (case ignored).");
-                        }
-
                         DeserializeMemberOntoStack(il, memberInfo);
                     }
 
-                    il.Emit(OpCodes.Newobj, constructor);
+                    il.Emit(OpCodes.Newobj, parameterConstructor);
                     il.Emit(OpCodes.Ret);
                     return;
                 }
+
+                // T obj = new T();
+                il.Emit(OpCodes.Newobj, parameterlessConstructor);
+                il.EmitStoreLocal(Locals.Read.T);
             }
             else
             {
                 // T obj = default;
                 il.EmitLoadLocalAddress(Locals.Read.T);
                 il.Emit(OpCodes.Initobj, typeof(T));
-                
-                WriteDeserializeMembers(il);
             }
 
+            WriteDeserializeMembers(il);
+            
             // return obj;
             il.EmitLoadLocal(Locals.Read.T);
             il.Emit(OpCodes.Ret);
