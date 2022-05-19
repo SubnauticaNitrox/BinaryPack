@@ -207,6 +207,16 @@ namespace System.Reflection.Emit
         {
             il.EmitLoadLocalForMemberWrite((int)(object)index, member);
         }
+        
+        /// <inheritdoc cref="EmitLoadLocalForMemberWrite{T}(System.Reflection.Emit.ILGenerator,T,System.Reflection.MemberInfo)"/>
+        /// /// <param name="shouldSkip">Should this method be completely skipped</param>
+        public static void EmitLoadLocalForMemberWrite<T>(this ILGenerator il, T index, MemberInfo member, bool shouldSkip) where T : Enum
+        {
+            if (!shouldSkip)
+            {
+                il.EmitLoadLocalForMemberWrite((int)(object)index, member);
+            }
+        }
 
         /// <summary>
         /// Loads the local variable at a specified index with the appropriate instruction to be able to write a given member
@@ -295,6 +305,16 @@ namespace System.Reflection.Emit
                     else il.EmitCallvirt(property.SetMethod);
                     break;
                 default: throw new ArgumentException($"The input {member.GetType()} instance can't be written");
+            }
+        }
+        
+        /// <inheritdoc cref="EmitWriteMember(System.Reflection.Emit.ILGenerator,System.Reflection.MemberInfo)"/>
+        /// /// <param name="shouldSkip">Should this method be completely skipped</param>
+        public static void EmitWriteMember(this ILGenerator il, MemberInfo member, bool shouldSkip)
+        {
+            if (!shouldSkip)
+            {
+                il.EmitWriteMember(member);
             }
         }
 

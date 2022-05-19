@@ -19,7 +19,7 @@ namespace BinaryPack.Unit
         public void DoubleConstructorTest() => TestRunner.Test( new DoubleConstructor() { TestString = "DoubleTest"});
         
         [TestMethod]
-        public void NoConstructorTest() => TestRunner.TestThrow<NoConstructor, NullReferenceException>( new NoConstructor("ThrowTest"));
+        public void NoConstructorTest() => TestRunner.TestThrow<NoConstructor, TypeInitializationException>( new NoConstructor("ThrowTest"));
     }
 
     public class EmptyConstructor : IEquatable<EmptyConstructor>
