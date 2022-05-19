@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -35,7 +35,7 @@ namespace System
                        member.MemberType == MemberTypes.Field) &&
                       member.IsDefined(typeof(SerializableMemberAttribute)) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
-                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
+                       member is PropertyInfo propertyInfo && propertyInfo.CanRead
                        && propertyInfo.GetIndexParameters().Length == 0)
                 orderby member.Name
                 select member,
@@ -56,7 +56,7 @@ namespace System
                       (mode.HasFlag(SerializationMode.NonPublicMembers) || member.IsPublic() ||
                        member.IsDefined(typeof(SerializableMemberAttribute))) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
-                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
+                       member is PropertyInfo propertyInfo && propertyInfo.CanRead
                        && propertyInfo.GetIndexParameters().Length == 0)
                 orderby member.Name
                 select member
