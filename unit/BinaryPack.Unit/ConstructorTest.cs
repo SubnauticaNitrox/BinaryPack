@@ -26,6 +26,8 @@ namespace BinaryPack.Unit
     {
         public string TestString;
 
+        public int TestInt { get; } = 3;
+
         public EmptyConstructor()
         {
         }
@@ -34,7 +36,7 @@ namespace BinaryPack.Unit
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return TestString == other.TestString;
+            return TestString == other.TestString && TestInt == other.TestInt;
         }
 
         public override bool Equals(object obj)
@@ -47,7 +49,7 @@ namespace BinaryPack.Unit
 
         public override int GetHashCode()
         {
-            return (TestString != null ? TestString.GetHashCode() : 0);
+            return HashCode.Combine(TestString, TestInt);
         }
     }
     

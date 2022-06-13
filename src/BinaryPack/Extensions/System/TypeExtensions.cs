@@ -71,7 +71,8 @@ namespace System
             // Checking for constructor with no parameter and even any constructors first
             if (type.GetConstructor(Type.EmptyTypes) != null || type.GetConstructors().Length == 0)
             {
-                return members.OrderBy(member => member.Name);
+                // Filter out properties without setter
+                return members.Where(member => member is not PropertyInfo propertyInfo || propertyInfo.CanWrite).OrderBy(member => member.Name);
             }
             
             // Caching to prevent multiple iterations.
