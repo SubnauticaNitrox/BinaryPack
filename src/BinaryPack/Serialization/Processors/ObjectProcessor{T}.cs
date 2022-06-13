@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -265,7 +265,7 @@ namespace BinaryPack.Serialization.Processors
 
                     if (parameterConstructor == null)
                     {
-                        throw new NullReferenceException("The given object has neither an parameterless constructor nor a constructor with parameters named like all serialized fields/properties.");
+                        throw new InvalidOperationException("The given object has neither an parameterless constructor nor a constructor with parameters named like all serialized fields/properties.");
                     }
                     
                     DeserializeMembers(il, true);

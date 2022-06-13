@@ -110,7 +110,7 @@ namespace System
                 }
             }
             
-            throw new NullReferenceException($"The type {type} has no constructor with parameters named like all Members.");
+            throw new InvalidOperationException($"The type {type} has no constructor with parameters named like all Members.");
         }
 
         /// <summary>
