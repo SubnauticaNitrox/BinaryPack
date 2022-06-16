@@ -8,8 +8,6 @@
 
 A fork of the official [`BinaryPack`](https://github.com/Sergio0694/BinaryPack/). It has a few additional features and provides support for net472.
 
-> **DISCLAIMER:** The underling library is provided as is, and it's no longer being actively maintained. **BinaryPack** was developed just for fun and it has not been tested in critical production environments. It does work fine in the scenarios described in this document (eg. I'm using this library to handle local cache files in some of my apps), but if you're looking for a more widely used and well tested library for fast binary serialization (that also offers better flexibility and customization), I'd recommend looking into [`MessagePack-CSharp`](https://github.com/neuecc/MessagePack-CSharp) first.
-
 ## Supported properties
 
 Here is a list of the property types currently supported by the library:
