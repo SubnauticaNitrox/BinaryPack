@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using BenchmarkDotNet.Attributes;
 using JsonTextReader = Newtonsoft.Json.JsonTextReader;
 using Utf8JsonSerializer = Utf8Json.JsonSerializer;
@@ -10,7 +10,7 @@ namespace BinaryPack.Benchmark.Implementations
         /// <summary>
         /// Deserialization powered by <see cref="Newtonsoft.Json.JsonSerializer"/>
         /// </summary>
-        [Benchmark(Baseline = true)]
+        [Benchmark(Baseline = true, Description = "NewtonsoftJson")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void NewtonsoftJson2()
         {
@@ -25,7 +25,7 @@ namespace BinaryPack.Benchmark.Implementations
         /// <summary>
         /// Deserialization powered by <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/>
         /// </summary>
-        [Benchmark]
+        [Benchmark(Description = "BinaryFormatter")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void BinaryFormatter2()
         {
@@ -38,7 +38,7 @@ namespace BinaryPack.Benchmark.Implementations
         /// <summary>
         /// Deserialization powered by <see cref="System.Text.Json.JsonSerializer"/>
         /// </summary>
-        [Benchmark]
+        [Benchmark(Description = "NetCoreJson")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void NetCoreJson2()
         {
@@ -46,11 +46,37 @@ namespace BinaryPack.Benchmark.Implementations
 
             _ = System.Text.Json.JsonSerializer.DeserializeAsync<T>(stream).Result;
         }
+        
+        /// <summary>
+        /// Deserialization powered by <see cref="System.Xml.Serialization.XmlSerializer"/>
+        /// </summary>
+        [Benchmark(Description = "XmlSerializer")]
+        [BenchmarkCategory(DESERIALIZATION)]
+        public void XmlSerializer2()
+        {
+            using Stream stream = new MemoryStream(XmlSerializerData);
 
+            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
+            
+            _ = serializer.Deserialize(stream);
+        }
+
+        /// <summary>
+        /// Deserialization powered by <see cref="Portable.Xaml.XamlServices"/>
+        /// </summary>
+        [Benchmark(Description = "PortableXml")]
+        [BenchmarkCategory(DESERIALIZATION)]
+        public void PortableXaml2()
+        {
+            using Stream stream = new MemoryStream(PortableXamlData);
+
+            _ = Portable.Xaml.XamlServices.Load(stream);
+        }
+        
         /// <summary>
         /// Deserialization powered by <see cref="System.Runtime.Serialization.Json.DataContractJsonSerializer"/>
         /// </summary>
-        [Benchmark]
+        [Benchmark(Description = "DataContractJson")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void DataContractJsonSerializer2()
         {
@@ -59,36 +85,11 @@ namespace BinaryPack.Benchmark.Implementations
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
             _ = serializer.ReadObject(stream);
         }
-
-        /// <summary>
-        /// Deserialization powered by <see cref="System.Xml.Serialization.XmlSerializer"/>
-        /// </summary>
-        [Benchmark]
-        [BenchmarkCategory(DESERIALIZATION)]
-        public void XmlSerializer2()
-        {
-            using Stream stream = new MemoryStream(XmlSerializerData);
-
-            var serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
-            _ = serializer.Deserialize(stream);
-        }
-
-        /// <summary>
-        /// Deserialization powered by <see cref="Portable.Xaml.XamlServices"/>
-        /// </summary>
-        [Benchmark]
-        [BenchmarkCategory(DESERIALIZATION)]
-        public void PortableXaml2()
-        {
-            using Stream stream = new MemoryStream(PortableXamlData);
-
-            _ = Portable.Xaml.XamlServices.Load(stream);
-        }
-
+        
         /// <summary>
         /// Deserialization powered by <see cref="Utf8JsonSerializer"/>
         /// </summary>
-        [Benchmark]
+        [Benchmark(Description = "Utf8Json")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void Utf8Json2()
         {
@@ -100,7 +101,7 @@ namespace BinaryPack.Benchmark.Implementations
         /// <summary>
         /// Deserialization powered by <see cref="MessagePack.MessagePackSerializer"/>
         /// </summary>
-        [Benchmark]
+        [Benchmark(Description = "MessagePack")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void MessagePack2()
         {
@@ -112,7 +113,7 @@ namespace BinaryPack.Benchmark.Implementations
         /// <summary>
         /// Deserialization powered by <see cref="BinaryConverter"/>
         /// </summary>
-        [Benchmark]
+        [Benchmark(Description = "BinaryPack")]
         [BenchmarkCategory(DESERIALIZATION)]
         public void BinaryPack2()
         {
