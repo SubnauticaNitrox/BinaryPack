@@ -2,6 +2,7 @@
 using System.IO;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using BinaryPack.Models.Interfaces;
 using JsonTextWriter = Newtonsoft.Json.JsonTextWriter;
 using JsonTextReader = Newtonsoft.Json.JsonTextReader;
@@ -15,6 +16,8 @@ namespace BinaryPack.Benchmark.Implementations
     /// </summary>
     /// <typeparam name="T">The type of model to serialize</typeparam>
     [MemoryDiagnoser]
+    [SimpleJob(RuntimeMoniker.Net472)]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
     [CategoriesColumn]
     public partial class Benchmark<T> where T : class, IInitializable, IEquatable<T>, new()
