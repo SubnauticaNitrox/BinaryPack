@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AbstractPacketModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HelloWorldModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LinQExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MathFExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\StructuralComparer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\RandomProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IInitializable.cs" />
