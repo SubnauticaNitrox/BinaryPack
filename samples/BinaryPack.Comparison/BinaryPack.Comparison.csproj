@@ -2,11 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-	<MSBuildWarningsAsMessages>NU1702;MSB3277</MSBuildWarningsAsMessages>
+    <MSBuildWarningsAsMessages>NU1702;MSB3277</MSBuildWarningsAsMessages>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BinaryPack" Version="1.0.3" Condition="'$(TargetFramework)' == 'netcoreapp3.1'" />
     <PackageReference Include="MessagePack" Version="2.3.85" />
     <PackageReference Include="Portable.Xaml" Version="0.26.0" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
@@ -15,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BinaryPack\BinaryPack.csproj" />
+    <ProjectReference Include="..\..\src\BinaryPack\BinaryPack.csproj" Condition="'$(TargetFramework)' == 'net472'" />
   </ItemGroup>
 
   <Import Project="..\..\unit\BinaryPack.Models\BinaryPack.Models.projitems" Label="Shared" />

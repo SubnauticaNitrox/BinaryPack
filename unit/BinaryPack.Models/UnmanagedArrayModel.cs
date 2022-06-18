@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Linq;
+using BinaryPack.Models.Helpers;
 using BinaryPack.Models.Interfaces;
 
 #nullable enable
