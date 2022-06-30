@@ -26,7 +26,7 @@ namespace BinaryPack.Unit
         /// </summary>
         /// <typeparam name="T">The type of model to test</typeparam>
         /// <param name="obj">The input model to serialize and test</param>
-        public static void Test<T>(T obj) where T : IEquatable<T>, new()
+        public static void Test<T>(T obj) where T : IEquatable<T>
         {
             // Serialize
             using MemoryStream stream = new MemoryStream();
@@ -54,6 +54,26 @@ namespace BinaryPack.Unit
             T result = BinaryConverter.Deserialize<T>(stream);
 
             Assert.IsNull(result);
+        }
+        
+        /// <summary>
+        /// Runs a test for a instance of a given type which is guaranteed to fail.
+        /// </summary>
+        /// <typeparam name="T">The type of model to test</typeparam>
+        /// <typeparam name="TException">The type of exception to be thrown</typeparam>
+        /// <param name="obj">The input model to serialize and test</param>
+        public static void TestThrow<T, TException>(T obj) where TException : Exception
+        {
+            Assert.ThrowsException<TException>(() =>
+            {
+                // Serialize
+                using MemoryStream stream = new MemoryStream();
+                BinaryConverter.Serialize(obj, stream);
+
+                // Deserialize
+                stream.Seek(0, SeekOrigin.Begin);
+                T _ = BinaryConverter.Deserialize<T>(stream);
+            });
         }
     }
 }

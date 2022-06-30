@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -35,9 +35,8 @@ namespace System
                        member.MemberType == MemberTypes.Field) &&
                       member.IsDefined(typeof(SerializableMemberAttribute)) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
-                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
+                       member is PropertyInfo propertyInfo && propertyInfo.CanRead
                        && propertyInfo.GetIndexParameters().Length == 0)
-                orderby member.Name
                 select member,
 
                 /* For all other modes, we first retrieve all the candidate members from the
@@ -56,17 +55,66 @@ namespace System
                       (mode.HasFlag(SerializationMode.NonPublicMembers) || member.IsPublic() ||
                        member.IsDefined(typeof(SerializableMemberAttribute))) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
-                       member is PropertyInfo propertyInfo && propertyInfo.CanRead && propertyInfo.CanWrite
+                       member is PropertyInfo propertyInfo && propertyInfo.CanRead
                        && propertyInfo.GetIndexParameters().Length == 0)
-                orderby member.Name
                 select member
-            }).ToArray();
+            }).SortMemberAsConstructorParameters(type)
+              .ToArray();
 
             return members;
         }
 
+        
+        /// Finding a constructor where all serialized members have a parameter with same type and same name (ignoring case)
+        private static IEnumerable<MemberInfo> SortMemberAsConstructorParameters(this IEnumerable<MemberInfo> members, Type type)
+        {
+            // Checking for constructor with no parameter and even any constructors first
+            if (type.GetConstructor(Type.EmptyTypes) != null || type.GetConstructors().Length == 0)
+            {
+                // Filter out properties without setter
+                return members.Where(member => member is not PropertyInfo propertyInfo || propertyInfo.CanWrite).OrderBy(member => member.Name);
+            }
+            
+            // Caching to prevent multiple iterations.
+            IEnumerable<MemberInfo> memberInfos = members as MemberInfo[] ?? members.ToArray();
+
+            List<MemberInfo> orderedMembers = new(memberInfos.Count());
+            
+            foreach (ConstructorInfo constructor in type.GetConstructors())
+            {
+                if (constructor.GetParameters().Length != memberInfos.Count())
+                {
+                    continue;
+                }
+                
+                orderedMembers.Clear();
+                bool foundAllParameters = true;
+
+                foreach (ParameterInfo parameter in constructor.GetParameters())
+                {
+                    MemberInfo? memberInfoForParameter = memberInfos.FirstOrDefault(x => x.GetMemberType() == parameter.ParameterType &&
+                                                                                         string.Equals(x.Name, parameter.Name, StringComparison.OrdinalIgnoreCase));
+
+                    if (memberInfoForParameter == null)
+                    {
+                        foundAllParameters = false;
+                        break;
+                    }
+                    
+                    orderedMembers.Add(memberInfoForParameter);
+                }
+
+                if (foundAllParameters)
+                {
+                    return orderedMembers;
+                }
+            }
+            
+            throw new InvalidOperationException($"The type {type} has no constructor with parameters named like all Members.");
+        }
+
         /// <summary>
-        /// Gets the syze in bytes of the given type
+        /// Gets the size in bytes of the given type
         /// </summary>
         /// <param name="type">The input type to analyze</param>
         [Pure]
