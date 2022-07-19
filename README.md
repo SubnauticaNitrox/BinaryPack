@@ -1,54 +1,12 @@
-![BinaryPackIcon](https://user-images.githubusercontent.com/10199417/67103112-d8852800-f1c4-11e9-9679-8cb344e988dc.png) [![NuGet](https://img.shields.io/nuget/v/BinaryPack.svg?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/BinaryPack/) [![NuGet](https://img.shields.io/nuget/dt/BinaryPack.svg?style=for-the-badge)](https://www.nuget.org/stats/packages/BinaryPack?groupby=Version)
-[![AppVeyor](https://img.shields.io/appveyor/ci/Sergio0694/binarypack/master.svg?style=for-the-badge&logo=appveyor)](https://ci.appveyor.com/project/Sergio0694/binarypack/master/)
+!["Nitrox Subnautica Multiplayer Mod"](https://i.imgur.com/ofnNX5z.gif)
 
-**BinaryPack** is a binary serialization library inspired by `MessagePack`, but even faster, more efficient and producing smaller files. The goal of this project is to be able to use **BinaryPack** as a drop-in replacement for JSON, XML, `MessagePack` or `BinaryFormatter` serialization, when the serialized models don't need to be shared with other applications or with web services. **BinaryPack** is built to be as fast and memory efficient as possible: it uses virtually no memory allocations, and the serialized data is packed to take up as little space as possible. Whenever you're using either JSON, `MessagePack`, XML or some other format to cache data for your apps, to send data between clients or to save data that is not critical, you can try using **BinaryPack** over your previous serialization library - it will provide the same basic functionalities for models serialization, but with much higher performance and less memory usage.
+# Nitrox BinaryPack
 
-> **DISCLAIMER:** this library is provided as is, and it's no longer being actively maintained. **BinaryPack** was developed just for fun and it has not been tested in critical production environments. It does work fine in the scenarios described in this document (eg. I'm using this library to handle local cache files in some of my apps), but if you're looking for a more widely used and well tested library for fast binary serialization (that also offers better flexibility and customization), I'd recommend looking into [`MessagePack-CSharp`](https://github.com/neuecc/MessagePack-CSharp) first.
+[![NuGet](https://img.shields.io/nuget/v/BinaryPack.svg)](https://www.nuget.org/packages/BinaryPack/)
+[![Discord](https://img.shields.io/discord/525437013403631617?logo=discord&logoColor=white)](https://discord.gg/E8B4X9s)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-![BinaryPack-benchmark](https://i.imgur.com/WJYuBXK.png)
-
-This benchmark was performed with the [JsonResponseModel](https://github.com/Sergio0694/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs) class available in the repository, which contains a number of `string`, `int`, `double` and `DateTime` properties, as well as a collection of other nested models, representing an example of a JSON response from a REST API. This README also includes a number of benchmarks that were performed on a number of different models. The benchmark code and all the models used can be found in this repository as well. To summarize:
-- **BinaryPack** was consistently the fastest library, both during serialization and deserialization. The performance difference ranged from **7.6x** faster than `Newtonsoft.Json`, **7x** than [`Utf8Json`](https://github.com/neuecc/Utf8Json) and **1.9x** than `MessagePack` when serializing a small JSON response, to **245x** faster than `Newtonsoft.Json`, **129x** than `Utf8Json` and **3.9x** than `MessagePack` when dealing with mostly binary data (eg. a model with a large `float[]` array).
-- The memory usage was on average on par or better than `Utf8Json`, except when deserializing mostly binary data, in which case **BinaryPack** used **1/100** the memory of `Utf8Json`, and **1/2** that of `MessagePack`. **BinaryPack** also almost always resulted in the lowest number of GC collections during serialization and deserialization of models.
-- In all cases, the **BinaryPack** serialization resulted in the smallest file on disk.
-
-# Table of Contents
-
-- [Installing from NuGet](#installing-from-nuget)
-- [Quick start](#quick-start)
-  - [Supported properties](#supported-properties)
-  - [Attributes](#attributes)
-  - [FAQ](#faq)
-- [Benchmarks](#benchmarks)
-- [Requirements](#requirements)
-- [Special thanks](#special-thanks)
-
-# Installing from NuGet
-
-To install **BinaryPack**, run the following command in the **Package Manager Console**
-
-```
-Install-Package BinaryPack
-```
-
-More details available [here](https://www.nuget.org/packages/BinaryPack/).
-
-# Quick start
-
-**BinaryPack** exposes a `BinaryConverter` class that acts as entry point for all public APIs. Every serialization API is available in an overload that works on a `Stream` instance, and one that instead uses the new `Memory<T>` APIs.
-
-The following sample shows how to serialize and deserialize a simple model.
-
-```C#
-// Assume that this class is a simple model with a few properties
-var model = new Model { Text = "Hello world!", Date = DateTime.Now, Values = new[] { 3, 77, 144, 256 } };
-
-// Serialize to a memory buffer
-var data = BinaryConverter.Serialize(model);
-
-// Deserialize the model
-var loaded = BinaryConverter.Deserialize<Model>(data);
-```
+A fork of the official [`BinaryPack`](https://github.com/Sergio0694/BinaryPack/). It has a few additional features and provides support for net472.
 
 ## Supported properties
 
@@ -60,6 +18,8 @@ Here is a list of the property types currently supported by the library:
 
 ✅ Unmanaged types: eg. `System.Numerics.Vector2`, and all `unmanaged` value types
 
+✅ Unions: eg. `abstract` classes
+
 ✅ .NET arrays: `T[]`, `T[,]`, `T[,,]`, etc.
 
 ✅ .NET collections: `List<T>`, `IList<T>`, `ICollection<T>`, `IEnumerable<T>`, etc.
@@ -68,86 +28,100 @@ Here is a list of the property types currently supported by the library:
 
 ✅ Other .NET types: `BitArray`
 
-## Attributes
-**BinaryPack** has a series of attributes that can be used to customize how the `BinaryConverter` class handles the serialization of input objects. By default, it will serialize all public properties of a type, but this behavior can be changed by using the `BinarySerialization` attribute. Here's an example:
+## Benchmarks
 
-```C#
-[BinarySerialization(SerializationMode.Properties | SerializationMode.NonPublicMembers)]
-public class MyModel
-{
-    internal string Id { get; set; }    
-    
-    public int Valud { get; set; }    
-    
-    [IgnoredMember]
-    public DateTime Timestamp { get; set; }
-}
-```
+Here are benchmarks executed with the benchmark sample ([JsonResponseModel](https://github.com/Sergio0694/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs)) included in this repository.
 
-Similarly, there's also a `SerializableMember` that can be used when the mode is set to `SerializationMode.Explicit`.
+### Speed Diagnosticts
 
-## FAQ
+|              Method |    .NET Runtime |      Categories |         Mean |     Error |    StdDev | Ratio | RatioSD |
+|-------------------- |---------------- |---------------- |-------------:|----------:|----------:|------:|--------:|
+|      NewtonsoftJson |        Core 3.1 | Deserialization |    655.70 us |  2.860 us |  2.535 us |  1.00 |    0.00 |
+|     BinaryFormatter |        Core 3.1 | Deserialization |    542.91 us |  2.744 us |  2.567 us |  0.83 |    0.00 |
+|         NetCoreJson |        Core 3.1 | Deserialization |    638.89 us |  0.568 us |  0.444 us |  0.97 |    0.00 |
+|       XmlSerializer |        Core 3.1 | Deserialization |    704.78 us |  1.727 us |  1.442 us |  1.07 |    0.01 |
+|         PortableXml |        Core 3.1 | Deserialization |  9,920.88 us | 50.469 us | 47.209 us | 15.13 |    0.11 |
+|    DataContractJson |        Core 3.1 | Deserialization |  2,339.89 us |  3.195 us |  2.832 us |  3.57 |    0.01 |
+|            Utf8Json |        Core 3.1 | Deserialization |    362.29 us |  2.824 us |  2.641 us |  0.55 |    0.00 |
+|         MessagePack |        Core 3.1 | Deserialization |    123.50 us |  0.203 us |  0.180 us |  0.19 |    0.00 |
+|    BinaryPack (Old) |        Core 3.1 | Deserialization |     50.45 us |  0.130 us |  0.115 us |  0.08 |    0.00 |
+|                     |                 |                 |              |           |           |       |         |
+|      NewtonsoftJson |        Core 3.1 |   Serialization |    542.60 us |  1.962 us |  1.739 us |  1.00 |    0.00 |
+|     BinaryFormatter |        Core 3.1 |   Serialization |    459.62 us |  1.581 us |  1.401 us |  0.85 |    0.00 |
+|         NetCoreJson |        Core 3.1 |   Serialization |    555.86 us |  1.982 us |  1.655 us |  1.02 |    0.00 |
+|       XmlSerializer |        Core 3.1 |   Serialization |    643.84 us |  2.549 us |  2.129 us |  1.19 |    0.01 |
+|         PortableXml |        Core 3.1 |   Serialization |  4,792.20 us | 23.136 us | 21.641 us |  8.83 |    0.05 |
+|    DataContractJson |        Core 3.1 |   Serialization |    791.81 us |  2.200 us |  1.837 us |  1.46 |    0.01 |
+|            Utf8Json |        Core 3.1 |   Serialization |    339.00 us |  0.541 us |  0.451 us |  0.62 |    0.00 |
+|         MessagePack |        Core 3.1 |   Serialization |     75.16 us |  0.162 us |  0.144 us |  0.14 |    0.00 |
+|    BinaryPack (Old) |        Core 3.1 |   Serialization |     54.26 us |  0.082 us |  0.077 us |  0.10 |    0.00 |
+|                     |                 |                 |              |           |           |       |         |
+|      NewtonsoftJson | Framework 4.7.2 | Deserialization |    720.38 us |  1.123 us |  0.996 us |  1.00 |    0.00 |
+|     BinaryFormatter | Framework 4.7.2 | Deserialization |    639.72 us |  0.556 us |  0.493 us |  0.89 |    0.00 |
+|         NetCoreJson | Framework 4.7.2 | Deserialization |    926.25 us |  0.648 us |  0.574 us |  1.29 |    0.00 |
+|       XmlSerializer | Framework 4.7.2 | Deserialization |    786.80 us |  1.147 us |  0.958 us |  1.09 |    0.00 |
+|         PortableXml | Framework 4.7.2 | Deserialization | 12,079.89 us | 94.994 us | 88.857 us | 16.77 |    0.13 |
+|    DataContractJson | Framework 4.7.2 | Deserialization |  2,572.43 us |  2.759 us |  2.304 us |  3.57 |    0.01 |
+|            Utf8Json | Framework 4.7.2 | Deserialization |    457.98 us |  0.539 us |  0.450 us |  0.64 |    0.00 |
+|         MessagePack | Framework 4.7.2 | Deserialization |    282.45 us |  0.663 us |  0.554 us |  0.39 |    0.00 |
+| BinaryPack (Nitrox) | Framework 4.7.2 | Deserialization |    117.54 us |  0.145 us |  0.121 us |  0.16 |    0.00 |
+|                     |                 |                 |              |           |           |       |         |
+|      NewtonsoftJson | Framework 4.7.2 |   Serialization |    527.62 us |  1.393 us |  1.235 us |  1.00 |    0.00 |
+|     BinaryFormatter | Framework 4.7.2 |   Serialization |    659.28 us |  1.596 us |  1.246 us |  1.25 |    0.00 |
+|         NetCoreJson | Framework 4.7.2 |   Serialization |    827.09 us |  0.889 us |  0.788 us |  1.57 |    0.00 |
+|       XmlSerializer | Framework 4.7.2 |   Serialization |    809.27 us |  1.399 us |  1.092 us |  1.53 |    0.00 |
+|         PortableXml | Framework 4.7.2 |   Serialization |  6,438.72 us |  8.980 us |  8.400 us | 12.20 |    0.03 |
+|    DataContractJson | Framework 4.7.2 |   Serialization |    813.18 us |  3.583 us |  3.352 us |  1.54 |    0.01 |
+|            Utf8Json | Framework 4.7.2 |   Serialization |    364.15 us |  0.737 us |  0.575 us |  0.69 |    0.00 |
+|         MessagePack | Framework 4.7.2 |   Serialization |    114.24 us |  0.128 us |  0.100 us |  0.22 |    0.00 |
+| BinaryPack (Nitrox) | Framework 4.7.2 |   Serialization |    123.50 us |  0.242 us |  0.214 us |  0.23 |    0.00 |
 
-#### Why is this library faster than the competition?
+### Memory Diagnosticts
 
-> There are a number of reasons for this. First of all, **BinaryPack** dynamically generates code to serialize and deserialize every type you need. This means that it doesn't need to inspect types using reflection while serializing/deserializing, eg. to see what fields it needs to read etc. - it just creates the right methods once that work directly on instances of each type, and read/write members one after the other exactly as you would do if you were to write that code manually. This also allows **BinaryPack** to have some extremely optimized code paths that would otherwise be completely impossible. Then, unlike the JSON/XML/MessagePack formats, **BinaryPack** doesn't need to include any additional metadata for the serialized items, which saves time. This allows it to use the minimum possible space to serialize every value, which also makes the serialized files as small as possible.
-
-#### Are there some downsides with this approach?
-
-> Yes, skipping all the metadata means that the **BinaryPack** format is not partcularly resilient to changes. This means that if you add or remove one of the serialized members of a type, it will not be possible to read previously serialized instances of that model. Because of this, **BinaryPack** should not be used with important data and is best suited for caching models or for quick serialization of data being exhanged between different clients.
-
-#### Is this compatible with UWP?
-
-> Unfortunately not at the moment, UWP is still on .NET Standard 2.0 and doesn't support dynamic code generation due to how the .NET Native compiler is implemented. Hopefully it will be possible to use **BinaryPack** on UWP when it moves to .NET 5 and the new MonoAOT compiler in the second half of 2020.
-
-# Benchmarks
-Here are three full benchmarks executed with the benchmark sample included in this repository. The error and standard deviation columns have been removed to fit each table in the horizontal space available for the README file reader on GitHub. As mentioned before, the JSON response model used in the first two benchmarks is the [JsonResponseModel](https://github.com/Sergio0694/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs) class. The class used in the last benchmark is instead [NeuralNetworkLayerModel](https://github.com/Sergio0694/BinaryPack/blob/master/unit/BinaryPack.Models/NeuralNetworkLayerModel.cs).
-
-### JSON response
-
-|          Method |      Categories |        Mean | Ratio |    Gen 0 |    Gen 1 |    Gen 2 | Allocated |
-|---------------- |---------------- |------------:|------:|---------:|---------:|---------:|----------:|
-|  NewtonsoftJson |   Serialization |  1.083.1 us |  1.00 | 156.2500 | 121.0938 | 107.4219 |  205083 B |
-| BinaryFormatter |   Serialization |  1.446.6 us |  1.34 | 132.8125 |  68.3594 |  37.1094 |  402558 B |
-|     NetCoreJson |   Serialization |  1.147.0 us |  1.06 | 199.2188 | 142.5781 | 140.6250 |  252407 B |
-|   XmlSerializer |   Serialization |  1.274.5 us |  1.18 | 250.0000 | 146.4844 | 107.4219 |  604205 B |
-|        Utf8Json |   Serialization |    744.4 us |  0.69 | 140.6250 | 140.6250 | 140.6250 |     495 B |
-|     MessagePack |   Serialization |    217.3 us |  0.20 |  61.0352 |  61.0352 |  61.0352 |     432 B |
-|      **BinaryPack** |   Serialization |    **168.1 us** |  **0.16** |  **26.6113** |  **26.6113** |  **26.6113** |     **108 B** |
-|                 |                 |             |       |          |          |          |           |
-|  NewtonsoftJson | Deserialization |  2.092.1 us |  1.00 |  66.4063 |  19.5313 |        - |  304320 B |
-| BinaryFormatter | Deserialization |  1.466.9 us |  0.70 | 130.8594 |  48.8281 |        - |  676136 B |
-|     NetCoreJson | Deserialization |  1.964.5 us |  0.94 |  50.7813 |  15.6250 |        - |  220856 B |
-|   XmlSerializer | Deserialization |  2.098.6 us |  1.00 | 132.8125 |  70.3125 |  35.1563 |  461000 B |
-|        Utf8Json | Deserialization |    887.0 us |  0.42 | 165.0391 | 131.8359 | 109.3750 |  237159 B |
-|     MessagePack | Deserialization |    337.0 us |  0.16 |  87.4023 |  53.2227 |  35.1563 |  241462 B |
-|      **BinaryPack** | Deserialization |    **168.8 us** |  **0.08** |  **46.6309** |  **13.9160** |        - |  **215192 B** |
-
-### Neural network layer model
-|          Method |      Categories |        Mean | Ratio |     Gen 0 |    Gen 1 |    Gen 2 | Allocated |
-|---------------- |---------------- |------------:|------:|----------:|---------:|---------:|----------:|
-|  NewtonsoftJson |   Serialization | 26,552.5 us | 1.000 | 1281.2500 |  93.7500 |  62.5000 | 5217488 B |
-| BinaryFormatter |   Serialization |    175.5 us | 0.007 |   70.5566 |  33.9355 |  33.6914 |  155111 B |
-|     NetCoreJson |   Serialization | 36,868.3 us | 1.389 | 1071.4286 |  71.4286 |  71.4286 | 4248542 B |
-|   XmlSerializer |   Serialization | 31,354.5 us | 1.181 | 1250.0000 | 468.7500 | 437.5000 | 3452059 B |
-|        Utf8Json |   Serialization | 13,936.4 us | 0.525 |  109.3750 | 109.3750 | 109.3750 |      72 B |
-|     MessagePack |   Serialization |    421.0 us | 0.016 |  111.3281 | 111.3281 | 111.3281 |     762 B |
-|      **BinaryPack** |   Serialization |    **108.9 us** | **0.004** |   **10.0098** |  **10.0098** |  **10.0098** |      **96 B** |
-|                 |                 |             |       |           |          |          |           |
-|  NewtonsoftJson | Deserialization | 25,525.0 us | 1.000 | 1687.5000 |  62.5000 |  31.2500 | 6994104 B |
-| BinaryFormatter | Deserialization |    126.4 us | 0.005 |   13.9160 |  10.7422 |  10.7422 |   13247 B |
-|     NetCoreJson | Deserialization | 16,771.4 us | 0.657 |   62.5000 |  31.2500 |  31.2500 |  133380 B |
-|   XmlSerializer | Deserialization | 38,382.1 us | 1.503 | 1071.4286 | 428.5714 | 285.7143 | 3575022 B |
-|        Utf8Json | Deserialization | 17,709.0 us | 0.694 |  187.5000 | 187.5000 | 187.5000 |  101100 B |
-|     MessagePack | Deserialization |    978.2 us | 0.039 |   95.7031 |  95.7031 |  95.7031 |    1258 B |
-|      **BinaryPack** | Deserialization |    **111.8 us** | **0.004** |   **10.0098** |   **9.8877** |   **9.8877** |     **826 B** |
+|              Method |    .NET Runtime |      Categories |    Gen 0 |   Gen 1 |   Gen 2 | Allocated |
+|-------------------- |---------------- |---------------- |---------:|--------:|--------:|----------:|
+|      NewtonsoftJson |        Core 3.1 | Deserialization |  39.0625 |  9.7656 |       - |    160 KB |
+|     BinaryFormatter |        Core 3.1 | Deserialization |  75.1953 | 23.4375 |       - |    357 KB |
+|         NetCoreJson |        Core 3.1 | Deserialization |  26.3672 |  5.8594 |       - |    108 KB |
+|       XmlSerializer |        Core 3.1 | Deserialization |  46.8750 |  5.8594 |       - |    195 KB |
+|         PortableXml |        Core 3.1 | Deserialization | 265.6250 | 62.5000 |       - |  1,412 KB |
+|    DataContractJson |        Core 3.1 | Deserialization | 132.8125 | 23.4375 |       - |    551 KB |
+|            Utf8Json |        Core 3.1 | Deserialization |  41.5039 | 41.5039 | 41.5039 |    234 KB |
+|         MessagePack |        Core 3.1 | Deserialization |  25.6348 |  0.4883 |       - |    105 KB |
+|    BinaryPack (Old) |        Core 3.1 | Deserialization |  23.8037 |  0.3052 |       - |     97 KB |
+|                     |                 |                 |          |         |         |           |
+|      NewtonsoftJson |        Core 3.1 |   Serialization |  41.0156 | 41.0156 | 41.0156 |    294 KB |
+|     BinaryFormatter |        Core 3.1 |   Serialization |  61.5234 |  0.4883 |       - |    254 KB |
+|         NetCoreJson |        Core 3.1 |   Serialization |  66.4063 | 66.4063 | 66.4063 |    316 KB |
+|       XmlSerializer |        Core 3.1 |   Serialization |  96.6797 | 54.6875 | 41.0156 |    475 KB |
+|         PortableXml |        Core 3.1 |   Serialization | 367.1875 | 54.6875 | 23.4375 |  1,612 KB |
+|    DataContractJson |        Core 3.1 |   Serialization |  35.1563 | 35.1563 | 35.1563 |    233 KB |
+|            Utf8Json |        Core 3.1 |   Serialization |  41.5039 | 41.5039 | 41.5039 |    194 KB |
+|         MessagePack |        Core 3.1 |   Serialization |  25.8789 |  5.1270 |       - |    107 KB |
+|    BinaryPack (Old) |        Core 3.1 |   Serialization |  11.3525 |  1.4038 |       - |     47 KB |
+|                     |                 |                 |          |         |         |           |
+|      NewtonsoftJson | Framework 4.7.2 | Deserialization |  37.1094 |  0.9766 |       - |    154 KB |
+|     BinaryFormatter | Framework 4.7.2 | Deserialization |  81.0547 | 23.4375 |       - |    366 KB |
+|         NetCoreJson | Framework 4.7.2 | Deserialization |  26.3672 |       - |       - |    108 KB |
+|       XmlSerializer | Framework 4.7.2 | Deserialization |  46.8750 |  2.9297 |       - |    193 KB |
+|         PortableXml | Framework 4.7.2 | Deserialization | 281.2500 | 78.1250 |       - |  1,473 KB |
+|    DataContractJson | Framework 4.7.2 | Deserialization | 140.6250 |       - |       - |    580 KB |
+|            Utf8Json | Framework 4.7.2 | Deserialization |  41.5039 | 41.5039 | 41.5039 |    250 KB |
+|         MessagePack | Framework 4.7.2 | Deserialization |  30.2734 |  1.4648 |       - |    124 KB |
+| BinaryPack (Nitrox) | Framework 4.7.2 | Deserialization |  45.4102 |  9.0332 |       - |    188 KB |
+|                     |                 |                 |          |         |         |           |
+|      NewtonsoftJson | Framework 4.7.2 |   Serialization |  39.0625 |       - |       - |    165 KB |
+|     BinaryFormatter | Framework 4.7.2 |   Serialization |  76.1719 | 18.5547 |       - |    316 KB |
+|         NetCoreJson | Framework 4.7.2 |   Serialization |  66.4063 | 66.4063 | 66.4063 |    328 KB |
+|       XmlSerializer | Framework 4.7.2 |   Serialization |  83.0078 | 41.0156 | 41.0156 |    468 KB |
+|         PortableXml | Framework 4.7.2 |   Serialization | 445.3125 | 31.2500 | 23.4375 |  1,909 KB |
+|    DataContractJson | Framework 4.7.2 |   Serialization |  34.1797 | 34.1797 | 34.1797 |    227 KB |
+|            Utf8Json | Framework 4.7.2 |   Serialization |  41.5039 | 41.5039 | 41.5039 |    196 KB |
+|         MessagePack | Framework 4.7.2 |   Serialization |  25.6348 |       - |       - |    106 KB |
+| BinaryPack (Nitrox) | Framework 4.7.2 |   Serialization |  15.3809 |       - |       - |     64 KB |
 
 # Requirements
 
-The **BinaryPack** library requires .NET Standard 2.1 support and it has no external dependencies.
+This **BinaryPack** fork requires .NET Framework 4.7.2
 
-Additionally, you need an IDE with .NET Core 3.0 and C# 8.0 support to compile the library and samples on your PC.
-
-# Special thanks
-
-Icon made by [freepik](https://www.flaticon.com/authors/freepik) from www.flaticon.com.
+The test projects also require .NET CoreApp 3.1
