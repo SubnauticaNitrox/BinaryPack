@@ -82,7 +82,8 @@ namespace System
             
             foreach (ConstructorInfo constructor in type.GetConstructors())
             {
-                if (constructor.GetParameters().Length != memberInfos.Count())
+                if (!constructor.IsDefined(typeof(ForceUseConstructorAttribute)) &&
+                    constructor.GetParameters().Length != memberInfos.Count())
                 {
                     continue;
                 }
