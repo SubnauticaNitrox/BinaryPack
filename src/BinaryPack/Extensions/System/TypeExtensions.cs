@@ -47,8 +47,7 @@ namespace System
                 _ =>
 
                 from member in type.GetMembers(
-                    BindingFlags.Public | BindingFlags.Instance |
-                    (mode.HasFlag(SerializationMode.NonPublicMembers) ? BindingFlags.NonPublic : BindingFlags.Default))
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 where (mode.HasFlag(SerializationMode.Properties) && member.MemberType == MemberTypes.Property ||
                        mode.HasFlag(SerializationMode.Fields) && member.MemberType == MemberTypes.Field) &&
                       !member.IsDefined(typeof(IgnoredMemberAttribute)) &&
@@ -56,6 +55,7 @@ namespace System
                        member.IsDefined(typeof(SerializableMemberAttribute))) &&
                       (member is FieldInfo fieldInfo && !fieldInfo.IsInitOnly && !fieldInfo.IsLiteral ||
                        member is PropertyInfo propertyInfo && propertyInfo.CanRead
+                       && propertyInfo.GetMethod.GetCustomAttribute<CompilerGeneratedAttribute>() != null
                        && propertyInfo.GetIndexParameters().Length == 0)
                 select member
             }).SortMemberAsConstructorParameters(type)
@@ -64,7 +64,7 @@ namespace System
             return members;
         }
 
-        
+
         /// Finding a constructor where all serialized members have a parameter with same type and same name (ignoring case)
         private static IEnumerable<MemberInfo> SortMemberAsConstructorParameters(this IEnumerable<MemberInfo> members, Type type)
         {
@@ -74,12 +74,12 @@ namespace System
                 // Filter out properties without setter
                 return members.Where(member => member is not PropertyInfo propertyInfo || propertyInfo.CanWrite).OrderBy(member => member.Name);
             }
-            
+
             // Caching to prevent multiple iterations.
             IEnumerable<MemberInfo> memberInfos = members as MemberInfo[] ?? members.ToArray();
 
             List<MemberInfo> orderedMembers = new(memberInfos.Count());
-            
+
             foreach (ConstructorInfo constructor in type.GetConstructors())
             {
                 if (!constructor.IsDefined(typeof(ForceUseConstructorAttribute)) &&
@@ -87,7 +87,7 @@ namespace System
                 {
                     continue;
                 }
-                
+
                 orderedMembers.Clear();
                 bool foundAllParameters = true;
 
@@ -101,7 +101,7 @@ namespace System
                         foundAllParameters = false;
                         break;
                     }
-                    
+
                     orderedMembers.Add(memberInfoForParameter);
                 }
 
@@ -110,7 +110,7 @@ namespace System
                     return orderedMembers;
                 }
             }
-            
+
             throw new InvalidOperationException($"The type {type} has no constructor with parameters corresponding to all members.");
         }
 
