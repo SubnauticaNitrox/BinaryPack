@@ -82,7 +82,8 @@ namespace System
             
             foreach (ConstructorInfo constructor in type.GetConstructors())
             {
-                if (constructor.GetParameters().Length != memberInfos.Count())
+                if (!constructor.IsDefined(typeof(ForceUseConstructorAttribute)) &&
+                    constructor.GetParameters().Length != memberInfos.Count())
                 {
                     continue;
                 }
@@ -110,7 +111,7 @@ namespace System
                 }
             }
             
-            throw new InvalidOperationException($"The type {type} has no constructor with parameters named like all Members.");
+            throw new InvalidOperationException($"The type {type} has no constructor with parameters corresponding to all members.");
         }
 
         /// <summary>

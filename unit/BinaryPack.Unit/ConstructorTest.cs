@@ -1,4 +1,5 @@
 using System;
+using BinaryPack.Attributes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinaryPack.Unit
@@ -17,6 +18,9 @@ namespace BinaryPack.Unit
 
         [TestMethod]
         public void DoubleConstructorTest() => TestRunner.Test( new DoubleConstructor() { TestString = "DoubleTest"});
+        
+        [TestMethod]
+        public void ForceConstructorTest() => TestRunner.Test( new ForceConstructor("TestString"));
         
         [TestMethod]
         public void NoConstructorTest() => TestRunner.TestThrow<NoConstructor, TypeInitializationException>( new NoConstructor("ThrowTest"));
@@ -97,8 +101,8 @@ namespace BinaryPack.Unit
 
     public class SwappedParameterConstructor : IEquatable<SwappedParameterConstructor>
     {
-        public string TestString;
-        public string TestString2;
+        public string TestString { get; }
+        public string TestString2 { get; }
 
         public SwappedParameterConstructor(string teststring2, string teststring)
         {
@@ -158,6 +162,45 @@ namespace BinaryPack.Unit
         public override int GetHashCode()
         {
             return (TestString != null ? TestString.GetHashCode() : 0);
+        }
+    }
+    
+    public class ForceConstructor : IEquatable<ForceConstructor>
+    {
+        public string TestString;
+        public int MemberWithoutParameter;
+
+        [ForceUseConstructor]
+        public ForceConstructor(string TestString)
+        {
+            this.TestString = TestString;
+            MemberWithoutParameter = 5;
+        }
+        
+        public ForceConstructor(string TestString, int MemberWithoutParameter)
+        {
+            throw new InvalidOperationException("Used a parameter constructor while a forced constructor is available");
+        }
+
+        public bool Equals(ForceConstructor other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TestString == other.TestString && 
+                   MemberWithoutParameter == other.MemberWithoutParameter;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ForceConstructor)obj);
+        }
+        
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(TestString, MemberWithoutParameter);
         }
     }
     

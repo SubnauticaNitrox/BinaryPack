@@ -356,7 +356,6 @@ MigrationBackup/
 **/.idea/shelf/*
 **/.idea/dictionaries
 **/.idea/httpRequests/
-**/.idea/.gitignore
 
 # Sensitive or high-churn files
 **/.idea/**/dataSources/
