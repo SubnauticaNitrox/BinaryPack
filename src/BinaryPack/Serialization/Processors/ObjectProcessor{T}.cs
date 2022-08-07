@@ -246,7 +246,13 @@ namespace BinaryPack.Serialization.Processors
 
             /* Initial null reference check for reference types.
              * If the first byte in the stream is 0, just return null. */
-            if (!typeof(T).IsValueType)
+            if (typeof(T).IsValueType)
+            {
+                // T obj = default;
+                il.EmitLoadLocalAddress(Locals.Read.T);
+                il.Emit(OpCodes.Initobj, typeof(T));
+            }
+            else
             {
                 // if (!reader.Read<bool>()) return null;
                 Label isNotNull = il.DefineLabel();
@@ -259,7 +265,7 @@ namespace BinaryPack.Serialization.Processors
 
                 ConstructorInfo? parameterlessConstructor = typeof(T).GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
 
-                if (parameterlessConstructor == null)
+                if (parameterlessConstructor == null || parameterlessConstructor.IsDefined(typeof(IgnoreConstructorAttribute)))
                 {
                     ConstructorInfo? parameterConstructor = typeof(T).GetConstructor(Members.Select(member => member.GetMemberType()).ToArray());
 
@@ -267,9 +273,9 @@ namespace BinaryPack.Serialization.Processors
                     {
                         throw new InvalidOperationException("The given object has neither an parameterless constructor nor a constructor with parameters named like all serialized fields/properties.");
                     }
-                    
+
                     DeserializeMembers(il, true);
-                        
+
                     il.Emit(OpCodes.Newobj, parameterConstructor);
                     il.Emit(OpCodes.Ret);
                     return;
@@ -278,12 +284,6 @@ namespace BinaryPack.Serialization.Processors
                 // T obj = new T();
                 il.Emit(OpCodes.Newobj, parameterlessConstructor);
                 il.EmitStoreLocal(Locals.Read.T);
-            }
-            else
-            {
-                // T obj = default;
-                il.EmitLoadLocalAddress(Locals.Read.T);
-                il.Emit(OpCodes.Initobj, typeof(T));
             }
 
             DeserializeMembers(il);

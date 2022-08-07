@@ -23,6 +23,9 @@ namespace BinaryPack.Unit
         public void ForceConstructorTest() => TestRunner.Test( new ForceConstructor("TestString"));
         
         [TestMethod]
+        public void IgnoreConstructorTest() => TestRunner.Test( new IgnoreConstructor("TestString2", 5));
+        
+        [TestMethod]
         public void NoConstructorTest() => TestRunner.TestThrow<NoConstructor, TypeInitializationException>( new NoConstructor("ThrowTest"));
     }
 
@@ -176,7 +179,7 @@ namespace BinaryPack.Unit
             this.TestString = TestString;
             MemberWithoutParameter = 5;
         }
-        
+
         public ForceConstructor(string TestString, int MemberWithoutParameter)
         {
             throw new InvalidOperationException("Used a parameter constructor while a forced constructor is available");
@@ -201,6 +204,45 @@ namespace BinaryPack.Unit
         public override int GetHashCode()
         {
             return HashCode.Combine(TestString, MemberWithoutParameter);
+        }
+    }
+    
+    public class IgnoreConstructor : IEquatable<IgnoreConstructor>
+    {
+        public string TestString { get; }
+
+        public int TestInt;
+
+        [IgnoreConstructor]
+        public IgnoreConstructor()
+        {
+            throw new InvalidOperationException("Used a parameterless constructor while it should be ignored.");
+        }
+        
+        public IgnoreConstructor(string TestString, int TestInt)
+        {
+            this.TestString = TestString;
+            this.TestInt = TestInt;
+        }
+
+        public bool Equals(IgnoreConstructor other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return TestString == other.TestString;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((IgnoreConstructor)obj);
+        }
+        
+        public override int GetHashCode()
+        {
+            return (TestString != null ? TestString.GetHashCode() : 0);
         }
     }
     

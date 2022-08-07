@@ -69,7 +69,9 @@ namespace System
         private static IEnumerable<MemberInfo> SortMemberAsConstructorParameters(this IEnumerable<MemberInfo> members, Type type)
         {
             // Checking for constructor with no parameter and even any constructors first
-            if (type.GetConstructor(Type.EmptyTypes) != null || type.GetConstructors().Length == 0)
+            ConstructorInfo emptyConstructor = type.GetConstructor(Type.EmptyTypes);
+            if ((emptyConstructor != null && !emptyConstructor.IsDefined(typeof(IgnoreConstructorAttribute))) || 
+                type.GetConstructors().Length == 0)
             {
                 // Filter out properties without setter
                 return members.Where(member => member is not PropertyInfo propertyInfo || propertyInfo.CanWrite).OrderBy(member => member.Name);
@@ -82,8 +84,13 @@ namespace System
 
             foreach (ConstructorInfo constructor in type.GetConstructors())
             {
-                if (!constructor.IsDefined(typeof(ForceUseConstructorAttribute)) &&
-                    constructor.GetParameters().Length != memberInfos.Count())
+                if (constructor.IsDefined(typeof(IgnoreConstructorAttribute)))
+                {
+                    continue;
+                }
+                
+                if (constructor.GetParameters().Length != memberInfos.Count() &&
+                    !constructor.IsDefined(typeof(ForceUseConstructorAttribute)))
                 {
                     continue;
                 }
