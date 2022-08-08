@@ -64,18 +64,6 @@ namespace BinaryPack.Benchmark.Implementations
         }
 
         /// <summary>
-        /// Serialization powered by <see cref="Portable.Xaml.XamlServices"/>
-        /// </summary>
-        [Benchmark(Description = "PortableXml")]
-        [BenchmarkCategory(SERIALIZATION)]
-        public void PortableXaml1()
-        {
-            using Stream stream = new MemoryStream();
-
-            Portable.Xaml.XamlServices.Save(stream, Model);
-        }
-
-        /// <summary>
         /// Serialization powered by <see cref="System.Runtime.Serialization.Json.DataContractJsonSerializer"/>
         /// </summary>
         [Benchmark(Description = "DataContractJson")]

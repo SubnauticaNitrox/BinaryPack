@@ -62,18 +62,6 @@ namespace BinaryPack.Benchmark.Implementations
         }
 
         /// <summary>
-        /// Deserialization powered by <see cref="Portable.Xaml.XamlServices"/>
-        /// </summary>
-        [Benchmark(Description = "PortableXml")]
-        [BenchmarkCategory(DESERIALIZATION)]
-        public void PortableXaml2()
-        {
-            using Stream stream = new MemoryStream(PortableXamlData);
-
-            _ = Portable.Xaml.XamlServices.Load(stream);
-        }
-        
-        /// <summary>
         /// Deserialization powered by <see cref="System.Runtime.Serialization.Json.DataContractJsonSerializer"/>
         /// </summary>
         [Benchmark(Description = "DataContractJson")]

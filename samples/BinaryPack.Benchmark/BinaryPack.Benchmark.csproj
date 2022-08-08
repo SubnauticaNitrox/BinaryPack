@@ -13,7 +13,6 @@
     <PackageReference Include="BinaryPack" Version="1.0.3" Condition="'$(TargetFramework)' == 'netcoreapp3.1'" />
     <PackageReference Include="MessagePack" Version="2.3.85" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Portable.Xaml" Version="0.26.0" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.5" Condition="'$(TargetFramework)' == 'net472'" />

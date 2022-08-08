@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -37,8 +37,6 @@ namespace BinaryPack.Benchmark.Implementations
         private byte[] DataContractJsonData;
 
         private byte[] XmlSerializerData;
-
-        private byte[] PortableXamlData;
 
         private byte[] Utf8JsonData;
 
@@ -130,18 +128,6 @@ namespace BinaryPack.Benchmark.Implementations
                 deserializedModel = (T)serializer.Deserialize(stream);
 
                 if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with XmlSerializer");
-            }
-
-            // Portable Xaml
-            using (MemoryStream stream = new MemoryStream())
-            {
-                Portable.Xaml.XamlServices.Save(stream, Model);
-
-                PortableXamlData = stream.ToArray();
-
-                stream.Seek(0, SeekOrigin.Begin);
-                _ = Portable.Xaml.XamlServices.Load(stream);
-                if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with Portable.Xaml");
             }
 
             // Utf8Json
