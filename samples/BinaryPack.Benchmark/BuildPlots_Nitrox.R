@@ -64,27 +64,27 @@ for (file in files) {
     group_by(paste(Method, Job, Categories))
 
   binaryPackStats <- result_stats %>%
-    filter(Method == "BinaryPack" | Method == "MessagePack")
+    filter(Method == "BinaryPack")
 
-  benchmarkBarplot <- ggplot(result_stats, aes(x=Method, y=numericalMean, fill=paste(Job, Categories))) +
-    guides(fill=guide_legend(title="Job")) +
+  benchmarkBarplot <- ggplot(result_stats, aes(x=Method, y=numericalMean, fill=paste(Job, Categories, sep = "\n"))) +
+    guides(fill=guide_legend(title="Framework")) +
     xlab("Target") +
     ylab(paste("Time,", timeunit)) +
-    ggtitle(title) +
+    ggtitle(paste(title, "Product Comparison")) +
     geom_bar(position=position_dodge(), stat="identity", colour="black") +
     geom_errorbar(aes(ymin=numericalMean-numericalStdDev, ymax=numericalMean+numericalStdDev), width=.4, position=position_dodge(.9)) +
     scale_fill_manual(values = c("red", "darkred", "blue", "darkblue")) +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1))
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.text = element_text(margin = margin(t = 5, b = 5)))
 
-  benchmarkBarplotBinaryBack <- ggplot(binaryPackStats, aes(x=Method, y=numericalMean, fill=paste(Job, Categories))) +
-    guides(fill=guide_legend(title="Job")) +
+  benchmarkBarplotBinaryBack <- ggplot(binaryPackStats, aes(x=sub("NET_472", "Nitrox.BinaryPack",sub("Core_31", "Original BinaryPack",paste(Job, Categories, sep = "\n"))), y=numericalMean, fill=paste(Job, Categories))) +
+    guides(fill="none") +
     xlab("Target") +
     ylab(paste("Time,", timeunit)) +
-    ggtitle(title) +
+    ggtitle(paste(title, "Framework Comparison")) +
     geom_bar(position=position_dodge(), stat="identity", colour="black") +
     geom_errorbar(aes(ymin=numericalMean-numericalStdDev, ymax=numericalMean+numericalStdDev), width=.4, position=position_dodge(.9)) +
     scale_fill_manual(values = c("red", "darkred", "blue", "darkblue")) +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.title = element_blank()) +
     coord_flip()
 
 

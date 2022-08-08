@@ -34,7 +34,7 @@ Here are benchmarks executed with the benchmark sample ([JsonResponseModel](http
 
 <p float="center">
   <img src="BenchmarkResults/BinaryPack.Benchmark-barplot.png" width="800" />
-  <img src="BenchmarkResults/BinaryPack.Benchmark-binarypackplot.png" width="400" /> 
+  <img src="BenchmarkResults/BinaryPack.Benchmark-binarypackplot.png" width="800" /> 
 </p>
 
 # Requirements
