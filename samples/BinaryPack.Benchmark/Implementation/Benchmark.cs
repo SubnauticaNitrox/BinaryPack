@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.IO;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Jobs;
 using BinaryPack.Models.Interfaces;
 using JsonTextWriter = Newtonsoft.Json.JsonTextWriter;
@@ -15,11 +16,12 @@ namespace BinaryPack.Benchmark.Implementations
     /// A benchmark for a generic type using different serialization libraries
     /// </summary>
     /// <typeparam name="T">The type of model to serialize</typeparam>
+    [CsvExporter(CsvSeparator.Semicolon), HtmlExporter]
     [MemoryDiagnoser]
-    [SimpleJob(RuntimeMoniker.Net472)]
-    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
-    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+    [SimpleJob(RuntimeMoniker.Net472, id: "NET_472")]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31, id:"Core_31")]
     [CategoriesColumn]
+    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
     public partial class Benchmark<T> where T : class, IInitializable, IEquatable<T>, new()
     {
         private const string SERIALIZATION = "Serialization";
