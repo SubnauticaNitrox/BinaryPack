@@ -38,7 +38,7 @@ namespace System.Reflection.Emit
                 il.DeclareLocal(type);
             }
         }
-        
+
         public static void DeclareLocals(this ILGenerator il, Type[] types)
         {
             foreach (Type type in types)
@@ -141,7 +141,7 @@ namespace System.Reflection.Emit
                     if (member.DeclaringType.IsValueType) il.EmitLoadArgumentAddress(index);
                     else il.EmitLoadArgument(index);
                     break;
-                default: throw new ArgumentException($"The input {member.GetType()} instance can't be read");
+                default: throw new ArgumentException($"The input member {member.Name} in {member.DeclaringType.FullName} can't be read");
             }
         }
 
@@ -223,7 +223,7 @@ namespace System.Reflection.Emit
                     if (member.DeclaringType.IsValueType) il.EmitLoadLocalAddress(index);
                     else il.EmitLoadLocal(index);
                     break;
-                default: throw new ArgumentException($"The input {member.GetType()} instance can't be read");
+                default: throw new ArgumentException($"The input member {member.Name} in {member.DeclaringType.FullName} can't be read");
             }
         }
 
@@ -274,7 +274,7 @@ namespace System.Reflection.Emit
                     if (property.GetMethod.IsStatic || property.DeclaringType.IsValueType) il.EmitCall(property.GetMethod);
                     else il.EmitCallvirt(property.GetMethod);
                     break;
-                default: throw new ArgumentException($"The input {member.GetType()} instance can't be read");
+                default: throw new ArgumentException($"The input member {member.Name} in {member.DeclaringType.FullName} can't be read");
             }
         }
 
@@ -294,7 +294,7 @@ namespace System.Reflection.Emit
                     if (property.GetMethod.IsStatic || property.DeclaringType.IsValueType) il.EmitCall(property.SetMethod);
                     else il.EmitCallvirt(property.SetMethod);
                     break;
-                default: throw new ArgumentException($"The input {member.GetType()} instance can't be written");
+                default: throw new ArgumentException($"The input member {member.Name} in {member.DeclaringType.FullName} can't be written");
             }
         }
 
