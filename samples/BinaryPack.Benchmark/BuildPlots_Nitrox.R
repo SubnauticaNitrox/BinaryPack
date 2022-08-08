@@ -88,6 +88,6 @@ for (file in files) {
     coord_flip()
 
 
-  ggsaveNice(gsub("-report.csv", "-barplot.png", file), benchmarkBarplot)
-  ggsaveNice(gsub("-report.csv", "-binarypackboxplot.png", file), benchmarkBarplotBinaryBack)
+  ggsaveNice(gsub("BinaryPack.Benchmark.Implementations.Benchmark_JsonResponseModel_-report.csv", "BinaryPack.Benchmark-barplot.png", file), benchmarkBarplot)
+  ggsaveNice(gsub("BinaryPack.Benchmark.Implementations.Benchmark_JsonResponseModel_-report.csv", "BinaryPack.Benchmark-binarypackplot.png", file), benchmarkBarplotBinaryBack)
 }
