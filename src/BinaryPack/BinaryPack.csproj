@@ -4,6 +4,9 @@
     <TargetFramework>net472</TargetFramework>
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
+    <PackageId>Nitrox.BinaryPack</PackageId>
+    <Description>A fork of the official BinaryPack for use by the Nitrox project. It has a few additional features and provides support for net472.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,5 +14,4 @@
     <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
   </ItemGroup>
-
 </Project>
