@@ -1,4 +1,5 @@
-﻿using BinaryPack.Models.Helpers;
+﻿#if NETFRAMEWORK
+using BinaryPack.Models.Helpers;
 using BinaryPack.Models.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -150,3 +151,4 @@ namespace BinaryPack.Models
         }
     }
 }
+#endif

@@ -2,6 +2,8 @@
 using System.IO;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Exporters.Csv;
+using BenchmarkDotNet.Jobs;
 using BinaryPack.Models.Interfaces;
 using JsonTextWriter = Newtonsoft.Json.JsonTextWriter;
 using JsonTextReader = Newtonsoft.Json.JsonTextReader;
@@ -14,9 +16,12 @@ namespace BinaryPack.Benchmark.Implementations
     /// A benchmark for a generic type using different serialization libraries
     /// </summary>
     /// <typeparam name="T">The type of model to serialize</typeparam>
+    [CsvExporter(CsvSeparator.Semicolon), HtmlExporter]
     [MemoryDiagnoser]
-    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+    [SimpleJob(RuntimeMoniker.Net472, id: "NET_472")]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31, id:"Core_31")]
     [CategoriesColumn]
+    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
     public partial class Benchmark<T> where T : class, IInitializable, IEquatable<T>, new()
     {
         private const string SERIALIZATION = "Serialization";
@@ -34,8 +39,6 @@ namespace BinaryPack.Benchmark.Implementations
         private byte[] DataContractJsonData;
 
         private byte[] XmlSerializerData;
-
-        private byte[] PortableXamlData;
 
         private byte[] Utf8JsonData;
 
@@ -127,18 +130,6 @@ namespace BinaryPack.Benchmark.Implementations
                 deserializedModel = (T)serializer.Deserialize(stream);
 
                 if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with XmlSerializer");
-            }
-
-            // Portable Xaml
-            using (MemoryStream stream = new MemoryStream())
-            {
-                Portable.Xaml.XamlServices.Save(stream, Model);
-
-                PortableXamlData = stream.ToArray();
-
-                stream.Seek(0, SeekOrigin.Begin);
-                _ = Portable.Xaml.XamlServices.Load(stream);
-                if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with Portable.Xaml");
             }
 
             // Utf8Json

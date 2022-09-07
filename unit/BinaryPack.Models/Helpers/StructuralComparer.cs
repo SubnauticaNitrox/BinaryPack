@@ -81,11 +81,11 @@ namespace BinaryPack.Models.Helpers
             if (a != null && b != null)
             {
                 if (a.Count != b.Count) return false;
-                foreach ((TKey k, TValue? aValue) in a)
+                foreach (KeyValuePair<TKey, TValue?> aPair in a)
                 {
-                    if (!b.TryGetValue(k, out TValue? bValue)) return false;
-                    if (!(aValue != null && bValue != null && aValue.Equals(bValue) ||
-                          aValue == null && bValue == null)) return false;
+                    if (!b.TryGetValue(aPair.Key, out TValue? bValue)) return false;
+                    if (!(aPair.Value != null && bValue != null && aPair.Value.Equals(bValue) ||
+                          aPair.Value == null && bValue == null)) return false;
                 }
 
                 return true;
@@ -110,11 +110,11 @@ namespace BinaryPack.Models.Helpers
             if (a != null && b != null)
             {
                 if (a.Count != b.Count) return false;
-                foreach ((TKey k, TValue? aValue) in a)
+                foreach (KeyValuePair<TKey, TValue?> aPair in a)
                 {
-                    if (!b.TryGetValue(k, out TValue? bValue)) return false;
-                    if (!(aValue != null && bValue != null && aValue.Value.Equals(bValue.Value) ||
-                          aValue == null && bValue == null)) return false;
+                    if (!b.TryGetValue(aPair.Key, out TValue? bValue)) return false;
+                    if (!(aPair.Value != null && bValue != null && aPair.Value.Value.Equals(bValue.Value) ||
+                          aPair.Value == null && bValue == null)) return false;
                 }
 
                 return true;

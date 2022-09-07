@@ -51,26 +51,22 @@ namespace BinaryPack.Comparison.Implementation
             var binaryPack = CalculateFileSize(stream => BinaryConverter.Serialize(model, stream));
 
             // Report
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new ();
             builder.AppendLine("=================");
             builder.AppendLine("Default output");
+            builder.AppendLine("GZip output (CompressionLevel = Fastest)");
+            builder.AppendLine("GZip output (CompressionLevel = Optimal)");
             builder.AppendLine("=================");
-            builder.AppendLine($"JSON:\t\t{json.Plain}");
-            builder.AppendLine($"XML:\t\t{xml.Plain}");
-            builder.AppendLine($"XAML:\t\t{xaml.Plain}");
-            builder.AppendLine($"BinaryForm.:\t{binaryFormatter.Plain}");
-            builder.AppendLine($"MessagePack:\t{messagePack.Plain}");
-            builder.AppendLine($"BinaryPack:\t{binaryPack.Plain}");
-            builder.AppendLine();
-            builder.AppendLine("=================");
-            builder.AppendLine("GZip output");
-            builder.AppendLine("=================");
-            builder.AppendLine($"JSON:\t\t{json.GZip}");
-            builder.AppendLine($"XML:\t\t{xml.GZip}");
-            builder.AppendLine($"XAML:\t\t{xaml.GZip}");
-            builder.AppendLine($"BinaryForm.:\t{binaryFormatter.GZip}");
-            builder.AppendLine($"MessagePack:\t{messagePack.GZip}");
-            builder.AppendLine($"BinaryPack:\t{binaryPack.GZip}");
+            builder.AppendLine($"{"JSON",-20}{json.Plain,7}{json.GZipFastest,10}{json.GZipOptimal,10}");
+            builder.AppendLine($"{"XML",-20}{xml.Plain,7}{xml.GZipFastest,10}{xml.GZipOptimal,10}");
+            builder.AppendLine($"{"XAML",-20}{xaml.Plain,7}{xaml.GZipFastest,10}{xaml.GZipOptimal,10}");
+            builder.AppendLine($"{"BinaryFormatter",-20}{binaryFormatter.Plain,7}{binaryFormatter.GZipFastest,10}{binaryFormatter.GZipOptimal,10}");
+            builder.AppendLine($"{"MessagePack",-20}{messagePack.Plain,7}{messagePack.GZipFastest,10}{messagePack.GZipOptimal,10}");
+#if NETCOREAPP
+            builder.AppendLine($"{"BinaryPack (old)",-20}{binaryPack.Plain,7}{binaryPack.GZipFastest,10}{binaryPack.GZipOptimal,10}");
+#elif NETFRAMEWORK
+            builder.AppendLine($"{"BinaryPack (Nitrox)",-20}{binaryPack.Plain,7}{binaryPack.GZipFastest,10}{binaryPack.GZipOptimal,10}");
+#endif
             Console.WriteLine(builder);
         }
 
@@ -79,20 +75,26 @@ namespace BinaryPack.Comparison.Implementation
         /// </summary>
         /// <param name="f">An <see cref="Action{T}"/> that writes the serialized data to a given <see cref="Stream"/></param>
         [Pure]
-        private static (long Plain, long GZip) CalculateFileSize(Action<Stream> f)
+        private static (long Plain, long GZipFastest, long GZipOptimal) CalculateFileSize(Action<Stream> f)
         {
-            using MemoryStream stream = new MemoryStream();
+            using MemoryStream stream = new ();
             f(stream);
 
             long plain = stream.Position;
 
-            using MemoryStream output = new MemoryStream();
-            using GZipStream gzip = new GZipStream(output, CompressionLevel.Optimal);
+            using MemoryStream outputFastest = new ();
+            using GZipStream gzipFastest = new (outputFastest, CompressionLevel.Fastest);
 
             stream.Seek(0, SeekOrigin.Begin);
-            stream.CopyTo(gzip);
+            stream.CopyTo(gzipFastest);
 
-            return (plain, output.Position);
+            using MemoryStream outputOptimal = new ();
+            using GZipStream gzipOptimal = new (outputOptimal, CompressionLevel.Optimal);
+
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.CopyTo(gzipOptimal);
+            
+            return (plain, outputFastest.Position, outputOptimal.Position);
         }
     }
 }
