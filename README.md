@@ -30,12 +30,10 @@ Here is a list of the property types currently supported by the library:
 
 ## Benchmarks
 
-Here are benchmarks executed with the benchmark sample ([JsonResponseModel](https://github.com/Sergio0694/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs)) included in this repository. You can click [here](BenchmarkResults/BinaryPack.Benchmark-report-github.md) for a detailed version.
+Here are benchmarks executed with the benchmark sample ([JsonResponseModel](https://github.com/SubnauticaNitrox/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs)) included in this repository. You can click [here](BenchmarkResults/BinaryPack.Benchmark-report-github.md) for a detailed version.
 
-<p float="center">
-  <img src="BenchmarkResults/BinaryPack.Benchmark-barplot.png" width="800" />
-  <img src="BenchmarkResults/BinaryPack.Benchmark-binarypackplot.png" width="800" /> 
-</p>
+!["BinaryPack Product Benchmark"](BenchmarkResults/BinaryPack.Benchmark-barplot.png)
+!["BinaryPack Framework Benchmark"](BenchmarkResults/BinaryPack.Benchmark-binarypackplot.png)
 
 # Requirements
 
