@@ -2,9 +2,9 @@
 
 # Nitrox BinaryPack
 
-[![NuGet](https://img.shields.io/nuget/v/BinaryPack.svg)](https://www.nuget.org/packages/BinaryPack/)
+[![NuGet](https://img.shields.io/nuget/v/Nitrox.BinaryPack.svg)](https://www.nuget.org/packages/Nitrox.BinaryPack/)
 [![Discord](https://img.shields.io/discord/525437013403631617?logo=discord&logoColor=white)](https://discord.gg/E8B4X9s)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A fork of the official [`BinaryPack`](https://github.com/Sergio0694/BinaryPack/). It has a few additional features and provides support for net472.
 
@@ -30,12 +30,10 @@ Here is a list of the property types currently supported by the library:
 
 ## Benchmarks
 
-Here are benchmarks executed with the benchmark sample ([JsonResponseModel](https://github.com/Sergio0694/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs)) included in this repository. You can click [here](BenchmarkResults/BinaryPack.Benchmark-report-github.md) for a detailed version.
+Here are benchmarks executed with the benchmark sample ([JsonResponseModel](https://github.com/SubnauticaNitrox/BinaryPack/blob/master/unit/BinaryPack.Models/JsonResponseModel.cs)) included in this repository. You can click [here](BenchmarkResults/BinaryPack.Benchmark-report-github.md) for a detailed version.
 
-<p float="center">
-  <img src="BenchmarkResults/BinaryPack.Benchmark-barplot.png" width="800" />
-  <img src="BenchmarkResults/BinaryPack.Benchmark-binarypackplot.png" width="800" /> 
-</p>
+!["BinaryPack Product Benchmark"](BenchmarkResults/BinaryPack.Benchmark-barplot.png)
+!["BinaryPack Framework Benchmark"](BenchmarkResults/BinaryPack.Benchmark-binarypackplot.png)
 
 # Requirements
 
