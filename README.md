@@ -2,7 +2,7 @@
 
 # Nitrox BinaryPack
 
-[![NuGet](https://img.shields.io/nuget/v/BinaryPack.svg)](https://www.nuget.org/packages/BinaryPack/)
+[![NuGet](https://img.shields.io/nuget/v/Nitrox.BinaryPack.svg)](https://www.nuget.org/packages/Nitrox.BinaryPack/)
 [![Discord](https://img.shields.io/discord/525437013403631617?logo=discord&logoColor=white)](https://discord.gg/E8B4X9s)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
