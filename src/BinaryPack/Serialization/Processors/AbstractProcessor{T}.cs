@@ -1,4 +1,4 @@
-﻿using BinaryPack.Serialization.Constants;
+using BinaryPack.Serialization.Constants;
 using BinaryPack.Serialization.Processors.Abstract;
 using BinaryPack.Serialization.Reflection;
 using System;
@@ -91,7 +91,7 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
             // Find and invoke correct serializer for type TSub (similar to ObjectProcessor)
             il.EmitLoadArgument(Arguments.Write.T);
             il.EmitLoadArgument(Arguments.Write.RefBinaryWriter);
-            il.EmitCall(KnownMembers.TypeProcessor.SerializerInfo(sub));
+            il.EmitCall(KnownMembers.TypeProcessor.SerializerInfo(sub, true));
 
             // return;
             il.Emit(OpCodes.Ret);
@@ -142,7 +142,7 @@ internal sealed partial class AbstractProcessor<TBase> : TypeProcessor<TBase>
 
             // Find and invoke correct deserializer for type TSub
             il.EmitLoadArgument(Arguments.Read.RefBinaryReader);
-            il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(sub));
+            il.EmitCall(KnownMembers.TypeProcessor.DeserializerInfo(sub, true));
 
             // return;
             il.Emit(OpCodes.Ret);

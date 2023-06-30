@@ -70,7 +70,7 @@ namespace System
         {
             // Checking for constructor with no parameter and even any constructors first
             ConstructorInfo emptyConstructor = type.GetConstructor(Type.EmptyTypes);
-            if ((emptyConstructor != null && !emptyConstructor.IsDefined(typeof(IgnoreConstructorAttribute))) || 
+            if ((emptyConstructor != null && !emptyConstructor.IsDefined(typeof(IgnoreConstructorAttribute))) ||
                 type.GetConstructors().Length == 0)
             {
                 // Filter out properties without setter
@@ -88,7 +88,7 @@ namespace System
                 {
                     continue;
                 }
-                
+
                 if (constructor.GetParameters().Length != memberInfos.Count() &&
                     !constructor.IsDefined(typeof(ForceUseConstructorAttribute)))
                 {
@@ -225,6 +225,23 @@ namespace System
             }
 
             return false;
+        }
+
+        public static Type? GetAbstractBaseType(this Type type)
+        {
+            Type? baseType = type;
+
+            while (!baseType.IsAbstract)
+            {
+                if (baseType.BaseType == null)
+                {
+                    return null;
+                }
+
+                baseType = baseType.BaseType;
+            }
+
+            return baseType;
         }
     }
 }

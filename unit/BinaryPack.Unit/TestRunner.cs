@@ -55,7 +55,25 @@ namespace BinaryPack.Unit
 
             Assert.IsNull(result);
         }
-        
+
+        /// <summary>
+        /// Runs an inequality test with a given instance of a specified type
+        /// </summary>
+        /// <typeparam name="T">The type of model to test</typeparam>
+        /// <param name="obj">The input model to serialize and test for inequality</param>
+        public static void TestInequality<T>(T obj) where T : IEquatable<T>
+        {
+            // Serialize
+            using MemoryStream stream = new MemoryStream();
+            BinaryConverter.Serialize(obj, stream);
+
+            // Deserialize
+            stream.Seek(0, SeekOrigin.Begin);
+            T result = BinaryConverter.Deserialize<T>(stream);
+
+            Assert.IsFalse(obj.Equals(result));
+        }
+
         /// <summary>
         /// Runs a test for a instance of a given type which is guaranteed to fail.
         /// </summary>
