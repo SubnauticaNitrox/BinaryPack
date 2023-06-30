@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageReference Include="BinaryPack" Version="1.0.3" Condition="'$(TargetFramework)' == 'netcoreapp3.1'" />
+    <PackageReference Include="IsExternalInit" Version="1.0.3"  Condition="'$(TargetFramework)' == 'net472'" />
     <PackageReference Include="MessagePack" Version="2.3.85" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
