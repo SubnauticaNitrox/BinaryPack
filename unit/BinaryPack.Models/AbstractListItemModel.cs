@@ -9,7 +9,7 @@ using BinaryPack.Attributes;
 namespace BinaryPack.Models
 {
     /// <summary>
-    /// A model that represents some packets that are sent in a multiplayer game
+    /// A model that represents some packets that are sent in a multiplayer game using the <see cref="ForceUnionAttribute"/>
     /// </summary>
     [Serializable]
     public sealed class AbstractListItemModel : IEquatable<AbstractListItemModel>

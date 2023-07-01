@@ -25,9 +25,13 @@ namespace BinaryPack.Serialization.Reflection
             /// </summary>
             /// <param name="objectType">The type of the item being handled by the requested processor</param>
             /// <param name="name">The name of property to retrieve from the processor instance</param>
+            /// <param name="ignoreInheritedAbstract">Prevents non abstract classes with [<see cref="ForceUnionAttribute"/>] to be matched to an <see cref="AbstractProcessor{TBase}"/>. This prevents cyclic execution.</param>
             [Pure]
             private static MethodInfo GetMethodInfo(Type objectType, string name, bool ignoreInheritedAbstract)
             {
+                static bool IsInheritedAbstractEligible(Type objectType) => objectType.GetCustomAttributes<ForceUnionAttribute>(false).Any() &&
+                                                                            objectType.GetAbstractBaseType() != null;
+
                 /* Get the right processor type for the input object type.
                  * Note that not all possible types are supported here. For instance,
                  * generic interfaces like IList<T> require special handling during
@@ -67,6 +71,7 @@ namespace BinaryPack.Serialization.Reflection
             /// Gets the <see cref="MethodInfo"/> instance for the dynamic serializer of a given type
             /// </summary>
             /// <param name="objectType">The type of the item being handled by the requested processor</param>
+            /// <param name="ignoreInheritedAbstract">Prevents non abstract classes with [<see cref="ForceUnionAttribute"/>] to be matched to an <see cref="AbstractProcessor{TBase}"/>. This prevents cyclic execution.</param>
             [Pure]
             public static MethodInfo SerializerInfo(Type objectType, bool ignoreInheritedAbstract = false) => GetMethodInfo(objectType, nameof(TypeProcessor<object>.SerializerInfo), ignoreInheritedAbstract);
 
@@ -74,11 +79,9 @@ namespace BinaryPack.Serialization.Reflection
             /// Gets the <see cref="MethodInfo"/> instance for the dynamic deserializer of a given type
             /// </summary>
             /// <param name="objectType">The type of the item being handled by the requested processor</param>
+            /// <param name="ignoreInheritedAbstract">Prevents non abstract classes with [<see cref="ForceUnionAttribute"/>] to be matched to an <see cref="AbstractProcessor{TBase}"/>. This prevents cyclic execution.</param>
             [Pure]
             public static MethodInfo DeserializerInfo(Type objectType, bool ignoreInheritedAbstract = false) => GetMethodInfo(objectType, nameof(TypeProcessor<object>.DeserializerInfo), ignoreInheritedAbstract);
-
-            private static bool IsInheritedAbstractEligible(Type objectType) => objectType.GetCustomAttributes<ForceUnionAttribute>(false).Any() &&
-                                                                                objectType.GetAbstractBaseType() != null;
         }
     }
 }

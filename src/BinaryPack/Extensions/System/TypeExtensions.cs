@@ -227,6 +227,10 @@ namespace System
             return false;
         }
 
+        /// <summary>
+        /// Gets the next abstract class in the inheritance hierarchy of the given <paramref name="type"/>
+        /// </summary>
+        /// <param name="type">The input type to traverse</param>
         public static Type? GetAbstractBaseType(this Type type)
         {
             Type? baseType = type;
