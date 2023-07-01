@@ -8,7 +8,11 @@ namespace BinaryPack.Unit.Internals
     public class SizeTest
     {
         // Test method for ensuring size of deserialized objects
-        private static void Test(int size)
+        [TestMethod]
+        [DataRow(0)]
+        [DataRow(1024)]
+        [DataRow(9999)]
+        public void SizeSerializationTest(int size)
         {
             // Initialize
             DynamicSizeModel model = new DynamicSizeModel();
@@ -25,14 +29,5 @@ namespace BinaryPack.Unit.Internals
             Assert.IsTrue(model.Equals(result));
             Assert.AreEqual(size, stream.Length - 9); //9 bytes are serialization overhead
         }
-
-        [TestMethod]
-        public void ZeroDataSerializationTest() => Test(0);
-
-        [TestMethod]
-        public void Size1024SerializationTest() => Test(1024);
-
-        [TestMethod]
-        public void Size9999SerializationTest() => Test(9999);
     }
 }
