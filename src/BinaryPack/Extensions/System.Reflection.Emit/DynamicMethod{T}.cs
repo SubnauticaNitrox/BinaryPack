@@ -55,7 +55,7 @@ namespace System.Reflection.Emit
         /// Creates a new unique id for a dynamic method
         /// </summary>
         [Pure]
-        private static string GetNewId() => $"__IL__{typeof(T).Name}_{Interlocked.Increment(ref _Count)}";
+        private static string GetNewId() => $"__IL__{typeof(T).Name}_{typeof(T).GetGenericArguments()[0].Name}_{Interlocked.Increment(ref _Count)}";
 
         /// <summary>
         /// Creates a new <see cref="DynamicMethod{T}"/> instance with an empty method

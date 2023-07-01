@@ -135,7 +135,7 @@ namespace BinaryPack.Serialization.Processors
             il.Emit(OpCodes.Newobj, KnownMembers.Span.ArrayWithOffsetAndLengthConstructor(typeof(byte)));
             il.EmitCall(KnownMembers.BinaryReader.ReadSpanT(typeof(byte)));
 
-            // string text = Encoding.UTF8.GetString(p, length);
+            // string text = Encoding.UTF8.GetString(array, 0, length);
             il.EmitReadMember(typeof(Encoding).GetProperty(nameof(Encoding.UTF8)));
             il.EmitLoadLocal(Locals.Read.ByteArray);
             il.EmitLoadInt32(0);
