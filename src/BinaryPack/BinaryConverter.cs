@@ -27,7 +27,7 @@ namespace BinaryPack
             {
                 ObjectProcessor<T>.Instance.Serializer(obj, ref writer);
 
-                return writer.Buffer;
+                return writer.Span.ToArray();
             }
             finally
             {
@@ -49,7 +49,7 @@ namespace BinaryPack
             {
                 ObjectProcessor<T>.Instance.Serializer(obj, ref writer);
 
-                stream.Write(writer.Buffer, 0, writer.Buffer.Length);
+                stream.Write(writer.Span.ToArray(), 0, writer.Span.Length);
             }
             finally
             {

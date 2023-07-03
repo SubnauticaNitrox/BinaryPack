@@ -45,12 +45,6 @@ namespace BinaryPack.Serialization.Buffers
         }
 
         /// <summary>
-        /// Returns the buffer used by the writer to avoid copying. The writer should not be written to or disposed while
-        /// the buffer is being used externally.
-        /// </summary>
-        public byte[] Buffer => _Buffer;
-
-        /// <summary>
         /// Writes a value of type <typeparamref name="T"/> to the underlying buffer
         /// </summary>
         /// <typeparam name="T">The type of value to write to the buffer</typeparam>

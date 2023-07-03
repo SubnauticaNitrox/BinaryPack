@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AbstractPacketModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DynamicSizeModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HelloWorldModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LinQExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MathFExtension.cs" />
