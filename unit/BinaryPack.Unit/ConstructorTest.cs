@@ -1,5 +1,6 @@
 using System;
 using BinaryPack.Attributes;
+using BinaryPack.Models.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BinaryPack.Unit
@@ -9,22 +10,22 @@ namespace BinaryPack.Unit
     {
         [TestMethod]
         public void EmptyConstructorTest() => TestRunner.Test( new EmptyConstructor() { TestString = "Test"});
-        
+
         [TestMethod]
         public void ParameterConstructorTest() => TestRunner.Test( new ParameterConstructor("ParameterTest", "AnotherParameter"));
-        
+
         [TestMethod]
         public void SwappedParameterConstructorTest() => TestRunner.Test( new SwappedParameterConstructor("SwappedParameterTest", "SwappedAnotherParameter"));
 
         [TestMethod]
         public void DoubleConstructorTest() => TestRunner.Test( new DoubleConstructor() { TestString = "DoubleTest"});
-        
+
         [TestMethod]
         public void ForceConstructorTest() => TestRunner.Test( new ForceConstructor("TestString"));
-        
+
         [TestMethod]
         public void IgnoreConstructorTest() => TestRunner.Test( new IgnoreConstructor("TestString2", 5));
-        
+
         [TestMethod]
         public void NoConstructorTest() => TestRunner.TestThrow<NoConstructor, TypeInitializationException>( new NoConstructor("ThrowTest"));
     }
@@ -59,7 +60,7 @@ namespace BinaryPack.Unit
             return HashCode.Combine(TestString, TestInt);
         }
     }
-    
+
     public class ParameterConstructor : IEquatable<ParameterConstructor>
     {
         public string TestString;
@@ -69,12 +70,12 @@ namespace BinaryPack.Unit
         {
             throw new InvalidOperationException("Used a constructor with wrong type count");
         }
-        
+
         public ParameterConstructor(int teststring, string teststring2)
         {
             throw new InvalidOperationException("Used a constructor with parameter type");
         }
-        
+
         public ParameterConstructor(string teststring, string teststring2)
         {
             TestString = teststring;
@@ -141,7 +142,7 @@ namespace BinaryPack.Unit
         public DoubleConstructor()
         {
         }
-        
+
         public DoubleConstructor(string TestString)
         {
             throw new InvalidOperationException("Used a parameter constructor while a parameterless is available");
@@ -167,7 +168,7 @@ namespace BinaryPack.Unit
             return (TestString != null ? TestString.GetHashCode() : 0);
         }
     }
-    
+
     public class ForceConstructor : IEquatable<ForceConstructor>
     {
         public string TestString;
@@ -189,7 +190,7 @@ namespace BinaryPack.Unit
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return TestString == other.TestString && 
+            return TestString == other.TestString &&
                    MemberWithoutParameter == other.MemberWithoutParameter;
         }
 
@@ -200,13 +201,13 @@ namespace BinaryPack.Unit
             if (obj.GetType() != this.GetType()) return false;
             return Equals((ForceConstructor)obj);
         }
-        
+
         public override int GetHashCode()
         {
             return HashCode.Combine(TestString, MemberWithoutParameter);
         }
     }
-    
+
     public class IgnoreConstructor : IEquatable<IgnoreConstructor>
     {
         public string TestString { get; }
@@ -218,7 +219,7 @@ namespace BinaryPack.Unit
         {
             throw new InvalidOperationException("Used a parameterless constructor while it should be ignored.");
         }
-        
+
         public IgnoreConstructor(string TestString, int TestInt)
         {
             this.TestString = TestString;
@@ -239,13 +240,13 @@ namespace BinaryPack.Unit
             if (obj.GetType() != this.GetType()) return false;
             return Equals((IgnoreConstructor)obj);
         }
-        
+
         public override int GetHashCode()
         {
             return (TestString != null ? TestString.GetHashCode() : 0);
         }
     }
-    
+
     public class NoConstructor
     {
         public string TestString;

@@ -19,7 +19,7 @@ namespace BinaryPack.Benchmark.Implementations
     [CsvExporter(CsvSeparator.Semicolon), HtmlExporter]
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net472, id: "NET_472")]
-    [SimpleJob(RuntimeMoniker.NetCoreApp31, id:"Core_31")]
+    [SimpleJob(RuntimeMoniker.Net70, id:"NET_7")]
     [CategoriesColumn]
     [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
     public partial class Benchmark<T> where T : class, IInitializable, IEquatable<T>, new()
@@ -73,20 +73,6 @@ namespace BinaryPack.Benchmark.Implementations
                 deserializedModel = serializer.Deserialize<T>(jsonReader);
 
                 if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with Newtonsoft.Json");
-            }
-
-            // Binary formatter
-            using (MemoryStream stream = new MemoryStream())
-            {
-                var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                formatter.Serialize(stream, Model);
-
-                BinaryFormatterData = stream.ToArray();
-
-                stream.Seek(0, SeekOrigin.Begin);
-                deserializedModel = (T)formatter.Deserialize(stream);
-
-                if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with BinaryFormatter");
             }
 
             // .NETCore JSON
@@ -156,19 +142,6 @@ namespace BinaryPack.Benchmark.Implementations
                 deserializedModel = MessagePack.MessagePackSerializer.Deserialize<T>(stream, MessagePack.Resolvers.ContractlessStandardResolver.Options);
 
                 if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with MessagePack");
-            }
-
-            // BinaryPack
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryConverter.Serialize(Model, stream);
-
-                BinaryPackData = stream.ToArray();
-
-                stream.Seek(0, SeekOrigin.Begin);
-                deserializedModel = BinaryConverter.Deserialize<T>(stream);
-
-                if (!Model.Equals(deserializedModel)) throw new InvalidOperationException("Failed comparison with BinaryPack");
             }
         }
     }

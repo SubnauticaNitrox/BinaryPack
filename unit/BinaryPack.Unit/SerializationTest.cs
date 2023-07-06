@@ -61,6 +61,18 @@ namespace BinaryPack.Unit
 #if NETFRAMEWORK
         [TestMethod]
         public void AbstractPacketSample() => TestRunner.Test<AbstractPacketModel>();
+
+        [TestMethod]
+        public void AbstractListItemSample()
+        {
+            AbstractListItemModel model = new();
+
+            model.Initialize();
+            TestRunner.Test(model);
+
+            model.InitializeFail();
+            TestRunner.TestInequality(model);
+        }
 #endif
     }
 }

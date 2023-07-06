@@ -23,19 +23,6 @@ namespace BinaryPack.Benchmark.Implementations
         }
 
         /// <summary>
-        /// Deserialization powered by <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/>
-        /// </summary>
-        [Benchmark(Description = "BinaryFormatter")]
-        [BenchmarkCategory(DESERIALIZATION)]
-        public void BinaryFormatter2()
-        {
-            using Stream stream = new MemoryStream(BinaryFormatterData);
-
-            var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            _ = formatter.Deserialize(stream);
-        }
-
-        /// <summary>
         /// Deserialization powered by <see cref="System.Text.Json.JsonSerializer"/>
         /// </summary>
         [Benchmark(Description = "NetCoreJson")]
@@ -46,7 +33,7 @@ namespace BinaryPack.Benchmark.Implementations
 
             _ = System.Text.Json.JsonSerializer.DeserializeAsync<T>(stream).Result;
         }
-        
+
         /// <summary>
         /// Deserialization powered by <see cref="System.Xml.Serialization.XmlSerializer"/>
         /// </summary>
@@ -57,7 +44,7 @@ namespace BinaryPack.Benchmark.Implementations
             using Stream stream = new MemoryStream(XmlSerializerData);
 
             var serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
-            
+
             _ = serializer.Deserialize(stream);
         }
 
@@ -73,7 +60,7 @@ namespace BinaryPack.Benchmark.Implementations
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(T));
             _ = serializer.ReadObject(stream);
         }
-        
+
         /// <summary>
         /// Deserialization powered by <see cref="Utf8JsonSerializer"/>
         /// </summary>
@@ -96,18 +83,6 @@ namespace BinaryPack.Benchmark.Implementations
             using Stream stream = new MemoryStream(MessagePackData);
 
             _ = MessagePack.MessagePackSerializer.Deserialize<T>(stream, MessagePack.Resolvers.ContractlessStandardResolver.Options);
-        }
-
-        /// <summary>
-        /// Deserialization powered by <see cref="BinaryConverter"/>
-        /// </summary>
-        [Benchmark(Description = "BinaryPack")]
-        [BenchmarkCategory(DESERIALIZATION)]
-        public void BinaryPack2()
-        {
-            using Stream stream = new MemoryStream(BinaryPackData);
-
-            _ = BinaryConverter.Deserialize<T>(stream);
         }
     }
 }

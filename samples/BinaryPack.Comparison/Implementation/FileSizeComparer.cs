@@ -37,18 +37,13 @@ namespace BinaryPack.Comparison.Implementation
             // XAML
             var xaml = CalculateFileSize(stream => XamlServices.Save(stream, model));
 
-            // BinaryFormatter
-            var binaryFormatter = CalculateFileSize(stream =>
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(stream, model);
-            });
-
             // MessagePack
             var messagePack = CalculateFileSize(stream => MessagePackSerializer.Serialize(stream, model, ContractlessStandardResolver.Options));
 
+#if NETFRAMEWORK
             // BinaryPack
             var binaryPack = CalculateFileSize(stream => BinaryConverter.Serialize(model, stream));
+#endif
 
             // Report
             StringBuilder builder = new ();
@@ -60,11 +55,8 @@ namespace BinaryPack.Comparison.Implementation
             builder.AppendLine($"{"JSON",-20}{json.Plain,7}{json.GZipFastest,10}{json.GZipOptimal,10}");
             builder.AppendLine($"{"XML",-20}{xml.Plain,7}{xml.GZipFastest,10}{xml.GZipOptimal,10}");
             builder.AppendLine($"{"XAML",-20}{xaml.Plain,7}{xaml.GZipFastest,10}{xaml.GZipOptimal,10}");
-            builder.AppendLine($"{"BinaryFormatter",-20}{binaryFormatter.Plain,7}{binaryFormatter.GZipFastest,10}{binaryFormatter.GZipOptimal,10}");
             builder.AppendLine($"{"MessagePack",-20}{messagePack.Plain,7}{messagePack.GZipFastest,10}{messagePack.GZipOptimal,10}");
-#if NETCOREAPP
-            builder.AppendLine($"{"BinaryPack (old)",-20}{binaryPack.Plain,7}{binaryPack.GZipFastest,10}{binaryPack.GZipOptimal,10}");
-#elif NETFRAMEWORK
+#if NETFRAMEWORK
             builder.AppendLine($"{"BinaryPack (Nitrox)",-20}{binaryPack.Plain,7}{binaryPack.GZipFastest,10}{binaryPack.GZipOptimal,10}");
 #endif
             Console.WriteLine(builder);
@@ -93,7 +85,7 @@ namespace BinaryPack.Comparison.Implementation
 
             stream.Seek(0, SeekOrigin.Begin);
             stream.CopyTo(gzipOptimal);
-            
+
             return (plain, outputFastest.Position, outputOptimal.Position);
         }
     }

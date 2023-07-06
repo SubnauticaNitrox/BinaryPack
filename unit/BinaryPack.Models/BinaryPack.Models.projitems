@@ -9,9 +9,11 @@
     <Import_RootNamespace>BinaryPack.Models</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AbstractListItemModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AbstractPacketModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DynamicSizeModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HelloWorldModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\HashCodeExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LinQExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MathFExtension.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\StructuralComparer.cs" />

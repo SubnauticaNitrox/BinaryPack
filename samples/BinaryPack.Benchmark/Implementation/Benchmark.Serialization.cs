@@ -25,19 +25,6 @@ namespace BinaryPack.Benchmark.Implementations
         }
 
         /// <summary>
-        /// Serialization powered by <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/>
-        /// </summary>
-        [Benchmark(Description = "BinaryFormatter")]
-        [BenchmarkCategory(SERIALIZATION)]
-        public void BinaryFormatter1()
-        {
-            using Stream stream = new MemoryStream();
-
-            var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            formatter.Serialize(stream, Model);
-        }
-
-        /// <summary>
         /// Serialization powered by <see cref="System.Text.Json.JsonSerializer"/>
         /// </summary>
         [Benchmark(Description = "NetCoreJson")]
@@ -98,18 +85,6 @@ namespace BinaryPack.Benchmark.Implementations
             using Stream stream = new MemoryStream();
 
             MessagePack.MessagePackSerializer.Serialize(stream, Model, MessagePack.Resolvers.ContractlessStandardResolver.Options);
-        }
-
-        /// <summary>
-        /// Serialization powered by <see cref="BinaryConverter"/>
-        /// </summary>
-        [Benchmark(Description = "BinaryPack")]
-        [BenchmarkCategory(SERIALIZATION)]
-        public void BinaryPack1()
-        {
-            using Stream stream = new MemoryStream();
-
-            BinaryConverter.Serialize(Model, stream);
         }
     }
 }
