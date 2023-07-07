@@ -3,7 +3,7 @@ using BenchmarkDotNet.Attributes;
 using JsonTextReader = Newtonsoft.Json.JsonTextReader;
 using Utf8JsonSerializer = Utf8Json.JsonSerializer;
 
-namespace BinaryPack.Benchmark.Implementations
+namespace BinaryPack.Benchmark.Implementation
 {
     public partial class Benchmark<T>
     {
@@ -21,6 +21,21 @@ namespace BinaryPack.Benchmark.Implementations
 
             _ = serializer.Deserialize<T>(jsonReader);
         }
+
+#pragma warning disable SYSLIB0011
+        /// <summary>
+        /// Deserialization powered by <see cref="System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/>
+        /// </summary>
+        [Benchmark(Description = "BinaryFormatter")]
+        [BenchmarkCategory(DESERIALIZATION)]
+        public void BinaryFormatter2()
+        {
+            using Stream stream = new MemoryStream(BinaryFormatterData);
+
+            var formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            _ = formatter.Deserialize(stream);
+        }
+#pragma warning restore SYSLIB0011
 
         /// <summary>
         /// Deserialization powered by <see cref="System.Text.Json.JsonSerializer"/>
@@ -84,5 +99,19 @@ namespace BinaryPack.Benchmark.Implementations
 
             _ = MessagePack.MessagePackSerializer.Deserialize<T>(stream, MessagePack.Resolvers.ContractlessStandardResolver.Options);
         }
+
+
+        /// <summary>
+        /// Deserialization powered by <see cref="BinaryConverter"/>
+        /// </summary>
+        [Benchmark(Description = "BinaryPack")]
+        [BenchmarkCategory(DESERIALIZATION)]
+        public void BinaryPack2()
+        {
+            using Stream stream = new MemoryStream(BinaryPackData);
+
+            _ = BinaryConverter.Deserialize<T>(stream);
+        }
+
     }
 }
