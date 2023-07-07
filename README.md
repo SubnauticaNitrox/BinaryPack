@@ -37,6 +37,6 @@ Here are benchmarks executed with the benchmark sample ([JsonResponseModel](http
 
 # Requirements
 
-This **BinaryPack** fork requires .NET Framework 4.7.2
+This **BinaryPack** fork requires **NetFramework 4.7.2**, **NetStandard 2.0** or **Net 7**
 
-The test projects also require .NET CoreApp 3.1
+The test and benchmark projects require **Net 7**
