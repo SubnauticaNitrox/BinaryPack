@@ -5,15 +5,13 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-	<MSBuildWarningsAsMessages>NU1702;MSB3277</MSBuildWarningsAsMessages>
+    <MSBuildWarningsAsMessages>NU1702;MSB3277</MSBuildWarningsAsMessages>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IsExternalInit" Version="1.0.3"  Condition="'$(TargetFramework)' == 'net472'" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
-    <PackageReference Include="coverlet.collector" Version="3.1.2">
+    <PackageReference Include="IsExternalInit" Version="1.0.3" Condition="'$(TargetFramework)' == 'net472'" />
+    <PackageReference Include="MSTest" Version="3.0.4" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
