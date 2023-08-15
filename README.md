@@ -2,6 +2,7 @@
 
 # Nitrox BinaryPack
 
+[![build and test](https://github.com/SubnauticaNitrox/BinaryPack/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/SubnauticaNitrox/BinaryPack/actions/workflows/build-and-test.yml)
 [![NuGet](https://img.shields.io/nuget/v/Nitrox.BinaryPack.svg)](https://www.nuget.org/packages/Nitrox.BinaryPack/)
 [![Discord](https://img.shields.io/discord/525437013403631617?logo=discord&logoColor=white)](https://discord.gg/E8B4X9s)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
