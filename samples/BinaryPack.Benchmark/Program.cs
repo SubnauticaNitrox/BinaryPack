@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
-using BinaryPack.Benchmark.Implementations;
+using BinaryPack.Benchmark.Implementation;
 using BinaryPack.Models;
 
 namespace BinaryPack.Benchmark

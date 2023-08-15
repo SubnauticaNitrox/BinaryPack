@@ -1,1 +1,3 @@
-"%R_HOME%\bin\Rscript.exe" "BuildPlots_Nitrox.R" "bin\Release\net7\BenchmarkDotNet.Artifacts\results\BinaryPack.Benchmark.Implementations.Benchmark_JsonResponseModel_-report.csv"
+dotnet run --configuration Release --framework net7 --runtimes net472 net7 --filter * --join
+"%R_HOME%\bin\Rscript.exe" "BuildPlots_Nitrox.R" "BenchmarkDotNet.Artifacts\results\BinaryPack.Benchmark.Implementation.Benchmark_JsonResponseModel_-report.csv"
+copy BenchmarkDotNet.Artifacts\results\BinaryPack.Benchmark.Implementation.Benchmark_JsonResponseModel_-report-github.md BenchmarkDotNet.Artifacts\results\BinaryPack.Benchmark-report-github.md

@@ -1,4 +1,4 @@
-BenchmarkDotNetVersion <- "BenchmarkDotNet v0.13.1 "
+BenchmarkDotNetVersion <- "BenchmarkDotNet v0.13.5 "
 dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE, showWarnings = FALSE)
 list.of.packages <- c("ggplot2", "dplyr", "gdata", "grid", "gridExtra", "Rcpp", "R.devices")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -76,7 +76,7 @@ for (file in files) {
     scale_fill_manual(values = c("red", "darkred", "blue", "darkblue")) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.text = element_text(margin = margin(t = 5, b = 5)))
 
-  benchmarkBarplotBinaryBack <- ggplot(binaryPackStats, aes(x=sub("NET_472", "Nitrox.BinaryPack",sub("Core_31", "Original BinaryPack",paste(Job, Categories, sep = "\n"))), y=numericalMean, fill=paste(Job, Categories))) +
+  benchmarkBarplotBinaryBack <- ggplot(binaryPackStats, aes(x=sub("NET_472", "Nitrox.BinaryPack",sub("NET_7", "Original BinaryPack",paste(Job, Categories, sep = "\n"))), y=numericalMean, fill=paste(Job, Categories))) +
     guides(fill="none") +
     xlab("Target") +
     ylab(paste("Time,", timeunit)) +
@@ -88,6 +88,6 @@ for (file in files) {
     coord_flip()
 
 
-  ggsaveNice(gsub("BinaryPack.Benchmark.Implementations.Benchmark_JsonResponseModel_-report.csv", "BinaryPack.Benchmark-barplot.png", file), benchmarkBarplot)
-  ggsaveNice(gsub("BinaryPack.Benchmark.Implementations.Benchmark_JsonResponseModel_-report.csv", "BinaryPack.Benchmark-binarypackplot.png", file), benchmarkBarplotBinaryBack)
+  ggsaveNice(gsub("BinaryPack.Benchmark.Implementation.Benchmark_JsonResponseModel_-report.csv", "BinaryPack.Benchmark-barplot.png", file), benchmarkBarplot)
+  ggsaveNice(gsub("BinaryPack.Benchmark.Implementation.Benchmark_JsonResponseModel_-report.csv", "BinaryPack.Benchmark-binarypackplot.png", file), benchmarkBarplotBinaryBack)
 }
