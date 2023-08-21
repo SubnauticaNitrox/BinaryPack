@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.7" />
     <PackageReference Include="BinaryPack" Version="1.0.3" Condition="'$(TargetFramework)' == 'net7'" />
     <PackageReference Include="IsExternalInit" Version="1.0.3" Condition="'$(TargetFramework)' == 'net472'" />
     <PackageReference Include="MessagePack" Version="2.3.85" />
