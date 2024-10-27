@@ -4,6 +4,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Exporters.Csv;
 using BenchmarkDotNet.Jobs;
+using BinaryPack.Benchmark.Jobs;
 using BinaryPack.Models.Interfaces;
 using JsonTextWriter = Newtonsoft.Json.JsonTextWriter;
 using JsonTextReader = Newtonsoft.Json.JsonTextReader;
@@ -20,6 +21,7 @@ namespace BinaryPack.Benchmark.Implementation
     [MemoryDiagnoser]
     [SimpleJob(RuntimeMoniker.Net472, id: "NET_472")]
     [SimpleJob(RuntimeMoniker.Net70, id:"NET_7")]
+    [UnityJob("2019.4.36f1")]
     [CategoriesColumn]
     [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
     public partial class Benchmark<T> where T : class, IInitializable, IEquatable<T>, new()
